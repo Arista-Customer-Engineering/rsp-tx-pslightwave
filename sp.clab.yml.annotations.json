@@ -6,319 +6,92 @@
   "networkNodeAnnotations": [],
   "nodeAnnotations": [
     {
-      "id": "ALPHA-EDGE-01",
-      "position": {
-        "x": -80,
-        "y": -260
-      }
+      "id": "CYWE-A",
+      "position": { "x": 0, "y": 0 }
     },
     {
-      "id": "BETA-EDGE-01",
-      "position": {
-        "x": 800,
-        "y": -240
-      }
+      "id": "CYWE-B",
+      "position": { "x": 200, "y": 0 }
     },
     {
-      "id": "ALPHA-PE-01",
-      "position": {
-        "x": -40,
-        "y": 0
-      }
+      "id": "FIBT-A",
+      "position": { "x": 500, "y": 0 }
     },
     {
-      "id": "ALPHA-PE-02",
-      "position": {
-        "x": 160,
-        "y": 0
-      }
+      "id": "FIBT-B",
+      "position": { "x": 700, "y": 0 }
     },
     {
-      "id": "ALPHA-PE-03",
-      "position": {
-        "x": 60,
-        "y": 100
-      }
+      "id": "TSHL-A",
+      "position": { "x": 1000, "y": 0 }
     },
     {
-      "id": "BETA-PE-01",
-      "position": {
-        "x": 700,
-        "y": 0
-      }
+      "id": "TSHL-B",
+      "position": { "x": 1200, "y": 0 }
     },
     {
-      "id": "BETA-PE-02",
-      "position": {
-        "x": 900,
-        "y": 0
-      }
+      "id": "CORP-A",
+      "position": { "x": 0, "y": 400 }
     },
     {
-      "id": "DELTA-PE-01",
-      "position": {
-        "x": 160,
-        "y": 460
-      }
+      "id": "CORP-B",
+      "position": { "x": 200, "y": 400 }
     },
     {
-      "id": "DELTA-PE-02",
-      "position": {
-        "x": -40,
-        "y": 460
-      }
+      "id": "CYGA-A",
+      "position": { "x": 500, "y": 400 }
     },
     {
-      "id": "GAMMA-PE-01",
-      "position": {
-        "x": 900,
-        "y": 460
-      }
+      "id": "CYGA-B",
+      "position": { "x": 700, "y": 400 }
     },
     {
-      "id": "GAMMA-PE-02",
-      "position": {
-        "x": 660,
-        "y": 460
-      }
+      "id": "CLAK-A",
+      "position": { "x": 1000, "y": 400 }
     },
     {
-      "id": "THETA-PE-01",
-      "position": {
-        "x": 160,
-        "y": 660
-      }
+      "id": "CLAK-B",
+      "position": { "x": 1200, "y": 400 }
     },
     {
-      "id": "THETA-PE-02",
-      "position": {
-        "x": -40,
-        "y": 660
-      }
+      "id": "CORP-R",
+      "position": { "x": 100, "y": 260 }
     },
     {
-      "id": "ALPHA-DHCP",
-      "position": {
-        "x": 200,
-        "y": 100
-      }
+      "id": "FIBT-R",
+      "position": { "x": 600, "y": 160 }
     },
     {
-      "id": "ALPHA-CG-NAT",
-      "position": {
-        "x": 60,
-        "y": -100
-      }
+      "id": "CLAK-R",
+      "position": { "x": 1100, "y": 260 }
     },
     {
-      "id": "BETA-CG-NAT",
-      "position": {
-        "x": 800,
-        "y": -100
-      }
+      "id": "SGRL-A",
+      "position": { "x": -400, "y": 200 }
     },
     {
       "id": "TRANSIT",
-      "position": {
-        "x": 360,
-        "y": -420
-      }
+      "position": { "x": 400, "y": -250 }
     },
     {
-      "id": "ACME-BETA",
-      "position": {
-        "x": 1000,
-        "y": 140
-      }
+      "id": "CUST-A",
+      "position": { "x": -500, "y": 540 }
     },
     {
-      "id": "ACME-GAMMA",
-      "position": {
-        "x": 1000,
-        "y": 580
-      }
+      "id": "CUST-B",
+      "position": { "x": -500, "y": 340 }
     },
     {
-      "id": "BETA-PON-01",
-      "position": {
-        "x": 800,
-        "y": 100
-      }
+      "id": "CUST-C",
+      "position": { "x": -500, "y": 80 }
     },
     {
-      "id": "OMNI-PON-01",
-      "position": {
-        "x": 420,
-        "y": 580
-      }
+      "id": "CUST-D",
+      "position": { "x": 600, "y": 580 }
     },
     {
-      "id": "BETA-CPE-PUB",
-      "position": {
-        "x": 720,
-        "y": 120
-      }
-    },
-    {
-      "id": "BETA-CPE-NAT",
-      "position": {
-        "x": 880,
-        "y": 120
-      }
-    },
-    {
-      "id": "OMNI-CPE-PUB",
-      "position": {
-        "x": 280,
-        "y": 520
-      }
-    },
-    {
-      "id": "OMNI-CPE-NAT",
-      "position": {
-        "x": 440,
-        "y": 520
-      }
-    },
-    {
-      "id": "MNO-CSR",
-      "position": {
-        "x": 560,
-        "y": 120
-      }
-    },
-    {
-      "id": "MNO-AGG",
-      "position": {
-        "x": -360,
-        "y": 520
-      }
-    },
-    {
-      "id": "TRAFFIC-GEN",
-      "position": {
-        "x": 360,
-        "y": -540
-      }
-    },
-    {
-      "id": "OMNI-PON-01",
-      "position": {
-        "x": 360,
-        "y": 420
-      }
-    },
-    {
-      "id": "BETA-PON-01",
-      "position": {
-        "x": 800,
-        "y": 20
-      }
-    },
-    {
-      "id": "BETA-CG-NAT",
-      "position": {
-        "x": 800,
-        "y": -160
-      }
-    },
-    {
-      "id": "ALPHA-CG-NAT",
-      "position": {
-        "x": -80,
-        "y": -160
-      }
-    },
-    {
-      "id": "ALPHA-DHCP",
-      "position": {
-        "x": 40,
-        "y": 120
-      }
-    },
-    {
-      "id": "THETA-PE-02",
-      "position": {
-        "x": -460,
-        "y": 420
-      }
-    },
-    {
-      "id": "THETA-PE-01",
-      "position": {
-        "x": -260,
-        "y": 420
-      }
-    },
-    {
-      "id": "GAMMA-PE-02",
-      "position": {
-        "x": 660,
-        "y": 300
-      }
-    },
-    {
-      "id": "GAMMA-PE-01",
-      "position": {
-        "x": 920,
-        "y": 300
-      }
-    },
-    {
-      "id": "DELTA-PE-02",
-      "position": {
-        "x": -220,
-        "y": 300
-      }
-    },
-    {
-      "id": "DELTA-PE-01",
-      "position": {
-        "x": 40,
-        "y": 300
-      }
-    },
-    {
-      "id": "BETA-PE-02",
-      "position": {
-        "x": 920,
-        "y": -40
-      }
-    },
-    {
-      "id": "BETA-PE-01",
-      "position": {
-        "x": 660,
-        "y": -40
-      }
-    },
-    {
-      "id": "ALPHA-PE-03",
-      "position": {
-        "x": -80,
-        "y": 40
-      }
-    },
-    {
-      "id": "ALPHA-PE-02",
-      "position": {
-        "x": 40,
-        "y": -40
-      }
-    },
-    {
-      "id": "ALPHA-PE-01",
-      "position": {
-        "x": -220,
-        "y": -40
-      }
-    },
-    {
-      "id": "BETA-EDGE-01",
-      "position": {
-        "x": 800,
-        "y": -260
-      }
+      "id": "CUST-Z",
+      "position": { "x": 1340, "y": 500 }
     }
   ],
   "edgeAnnotations": [],

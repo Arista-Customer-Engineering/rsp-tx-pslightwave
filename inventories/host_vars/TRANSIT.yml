@@ -1503,181 +1503,182 @@ router_general:
     code_units:
       - name: TRANSIT_ROUTE_ORIGINS
         content: |
-          function SET_ORIGIN_ARELION() -> bool {
-             if match(source.prefix, prefix_list_v4("PL_GOOGLE_15169")) {
-                set(source.as_path, [15169]);
+          function SET_ORIGIN_ARELION() {
+             if prefix match prefix_list_v4 PL_GOOGLE_15169 {
+                as_path prepend 15169;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_AMAZON_16509")) {
-                set(source.as_path, [16509]);
+             if prefix match prefix_list_v4 PL_AMAZON_16509 {
+                as_path prepend 16509;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_NETFLIX_2906")) {
-                set(source.as_path, [2906]);
+             if prefix match prefix_list_v4 PL_NETFLIX_2906 {
+                as_path prepend 2906;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_AKAMAI_20940")) {
-                set(source.as_path, [20940]);
+             if prefix match prefix_list_v4 PL_AKAMAI_20940 {
+                as_path prepend 20940;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_ATT_7018")) {
-                set(source.as_path, [7018]);
+             if prefix match prefix_list_v4 PL_ATT_7018 {
+                as_path prepend 7018;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_COMCAST_7922")) {
-                set(source.as_path, [7922]);
-                return true;
-             }
-             return false;
-          }
-
-          function SET_ORIGIN_COGENT() -> bool {
-             if match(source.prefix, prefix_list_v4("PL_CLOUDFLARE_13335")) {
-                set(source.as_path, [13335]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_MICROSOFT_8075")) {
-                set(source.as_path, [8075]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_GITHUB_36459")) {
-                set(source.as_path, [36459]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_DIGITALOCEAN_14061")) {
-                set(source.as_path, [14061]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_FASTLY_54113")) {
-                set(source.as_path, [54113]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_CHARTER_20115")) {
-                set(source.as_path, [20115]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_ORACLE_31898")) {
-                set(source.as_path, [31898]);
+             if prefix match prefix_list_v4 PL_COMCAST_7922 {
+                as_path prepend 7922;
                 return true;
              }
              return false;
           }
 
-          function SET_ORIGIN_LUMEN() -> bool {
-             if match(source.prefix, prefix_list_v4("PL_META_32934")) {
-                set(source.as_path, [32934]);
+          function SET_ORIGIN_COGENT() {
+             if prefix match prefix_list_v4 PL_CLOUDFLARE_13335 {
+                as_path prepend 13335;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_APPLE_714")) {
-                set(source.as_path, [714]);
+             if prefix match prefix_list_v4 PL_MICROSOFT_8075 {
+                as_path prepend 8075;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_VERIZON_701")) {
-                set(source.as_path, [701]);
+             if prefix match prefix_list_v4 PL_GITHUB_36459 {
+                as_path prepend 36459;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_TMOBILE_21928")) {
-                set(source.as_path, [21928]);
+             if prefix match prefix_list_v4 PL_DIGITALOCEAN_14061 {
+                as_path prepend 14061;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_LINODE_63949")) {
-                set(source.as_path, [63949]);
+             if prefix match prefix_list_v4 PL_FASTLY_54113 {
+                as_path prepend 54113;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_SALESFORCE_14340")) {
-                set(source.as_path, [14340]);
+             if prefix match prefix_list_v4 PL_CHARTER_20115 {
+                as_path prepend 20115;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_TWITCH_46489")) {
-                set(source.as_path, [46489]);
-                return true;
-             }
-             return false;
-          }
-
-          function SET_ORIGIN_NTT() -> bool {
-             if match(source.prefix, prefix_list_v4("PL_TWITTER_13414")) {
-                set(source.as_path, [13414]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_ZOOM_52347")) {
-                set(source.as_path, [52347]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_ALIBABA_45102")) {
-                set(source.as_path, [45102]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_TENCENT_132203")) {
-                set(source.as_path, [132203]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_SOFTBANK_17676")) {
-                set(source.as_path, [17676]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_KDDI_2516")) {
-                set(source.as_path, [2516]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_NTTCOM_4713")) {
-                set(source.as_path, [4713]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_LINKEDIN_14413")) {
-                set(source.as_path, [14413]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_SPOTIFY_8403")) {
-                set(source.as_path, [8403]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_VALVE_32590")) {
-                set(source.as_path, [32590]);
+             if prefix match prefix_list_v4 PL_ORACLE_31898 {
+                as_path prepend 31898;
                 return true;
              }
              return false;
           }
 
-          function SET_ORIGIN_GTT() -> bool {
-             if match(source.prefix, prefix_list_v4("PL_DTAG_3320")) {
-                set(source.as_path, [3320]);
+          function SET_ORIGIN_LUMEN() {
+             if prefix match prefix_list_v4 PL_META_32934 {
+                as_path prepend 32934;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_BT_2856")) {
-                set(source.as_path, [2856]);
+             if prefix match prefix_list_v4 PL_APPLE_714 {
+                as_path prepend 714;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_ORANGE_5511")) {
-                set(source.as_path, [5511]);
+             if prefix match prefix_list_v4 PL_VERIZON_701 {
+                as_path prepend 701;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_VODAFONE_3209")) {
-                set(source.as_path, [3209]);
+             if prefix match prefix_list_v4 PL_TMOBILE_21928 {
+                as_path prepend 21928;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_TELEFONICA_12956")) {
-                set(source.as_path, [12956]);
+             if prefix match prefix_list_v4 PL_LINODE_63949 {
+                as_path prepend 63949;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_SWISSCOM_3303")) {
-                set(source.as_path, [3303]);
+             if prefix match prefix_list_v4 PL_SALESFORCE_14340 {
+                as_path prepend 14340;
                 return true;
              }
-             elif match(source.prefix, prefix_list_v4("PL_OVH_16276")) {
-                set(source.as_path, [16276]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_HETZNER_24940")) {
-                set(source.as_path, [24940]);
-                return true;
-             }
-             elif match(source.prefix, prefix_list_v4("PL_SCALEWAY_12876")) {
-                set(source.as_path, [12876]);
+             if prefix match prefix_list_v4 PL_TWITCH_46489 {
+                as_path prepend 46489;
                 return true;
              }
              return false;
           }
+
+          function SET_ORIGIN_NTT() {
+             if prefix match prefix_list_v4 PL_TWITTER_13414 {
+                as_path prepend 13414;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_ZOOM_52347 {
+                as_path prepend 52347;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_ALIBABA_45102 {
+                as_path prepend 45102;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_TENCENT_132203 {
+                as_path prepend 132203;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_SOFTBANK_17676 {
+                as_path prepend 17676;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_KDDI_2516 {
+                as_path prepend 2516;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_NTTCOM_4713 {
+                as_path prepend 4713;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_LINKEDIN_14413 {
+                as_path prepend 14413;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_SPOTIFY_8403 {
+                as_path prepend 8403;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_VALVE_32590 {
+                as_path prepend 32590;
+                return true;
+             }
+             return false;
+          }
+
+          function SET_ORIGIN_GTT() {
+             if prefix match prefix_list_v4 PL_DTAG_3320 {
+                as_path prepend 3320;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_BT_2856 {
+                as_path prepend 2856;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_ORANGE_5511 {
+                as_path prepend 5511;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_VODAFONE_3209 {
+                as_path prepend 3209;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_TELEFONICA_12956 {
+                as_path prepend 12956;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_SWISSCOM_3303 {
+                as_path prepend 3303;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_OVH_16276 {
+                as_path prepend 16276;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_HETZNER_24940 {
+                as_path prepend 24940;
+                return true;
+             }
+             if prefix match prefix_list_v4 PL_SCALEWAY_12876 {
+                as_path prepend 12876;
+                return true;
+             }
+             return false;
+          }
+          EOF
 
 
 router_bgp:

@@ -1,0 +1,87 @@
+---
+# CUST-A: VPWS customer, A-side (multihomed).
+# Dual-homed via LACP port-channel to SGRL-A:Ethernet1 + CORP-A:Ethernet3/1.
+# VPWS carries VLAN 100 to CUST-Z on the Z-side (CLAK-B).
+hostname: CUST-A
+
+aaa_authentication:
+  login:
+    default: local
+    console: local
+aaa_authorization:
+  exec:
+    default: local
+
+ip_routing: true
+service_routing_protocols_model: multi-agent
+
+local_users:
+  - name: admin
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$n5UzLR7bucITZ.fE$BoS3AU71MBIDlSsWb1NpH0P62l9AyanxImmA.9OKesBuClBXXae3oMf0fm1HA.3rxwzvbkbVl.QarZAHgm7V81
+
+management_interfaces:
+  - name: Management0
+    description: OOB_MANAGEMENT
+    shutdown: false
+    vrf: OOB
+    ip_address: 192.168.128.230/24
+    type: oob
+    gateway: 192.168.128.254
+    eos_cli: |
+      no lldp transmit
+      no lldp receive
+
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+    - name: OOB
+
+vrfs:
+  - name: OOB
+    ip_routing: false
+
+ethernet_interfaces:
+  - name: Ethernet1
+    description: "SGRL-A uplink (VPWS A-side)"
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+    switchport:
+      enabled: false
+  - name: Ethernet2
+    description: "CORP-A uplink (VPWS A-side)"
+    shutdown: false
+    channel_group:
+      id: 1
+      mode: active
+    switchport:
+      enabled: false
+
+port_channel_interfaces:
+  - name: Port-Channel1
+    description: "VPWS ESI LAG to SGRL-A + CORP-A"
+    shutdown: false
+    switchport:
+      enabled: false
+  - name: Port-Channel1.100
+    description: "VPWS service VLAN 100"
+    shutdown: false
+    encapsulation_vlan:
+      client:
+        encapsulation: dot1q
+        vlan: 100
+    ip_address: 192.168.100.1/24
+
+loopback_interfaces:
+  - name: Loopback0
+    description: "CUST-A Loopback"
+    shutdown: false
+    ip_address: 10.200.0.1/32
+
+static_routes:
+  - vrf: OOB
+    prefix: 0.0.0.0/0
+    next_hop: 192.168.128.254

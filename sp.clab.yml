@@ -92,12 +92,9 @@ topology:
     # Customer Endpoints
     ######################################################################
     CUST-A:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
+      kind: ceos
       mgmt-ipv4: 192.168.128.230
-      exec:
-        - ip link set eth1 up
-        - ip link set eth2 up
+      startup-config: inventories/intended/configs/CUST-A.cfg
     CUST-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.232
@@ -111,11 +108,9 @@ topology:
       mgmt-ipv4: 192.168.128.234
       startup-config: inventories/intended/configs/CUST-D.cfg
     CUST-Z:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
+      kind: ceos
       mgmt-ipv4: 192.168.128.231
-      exec:
-        - ip link set eth1 up
+      startup-config: inventories/intended/configs/CUST-Z.cfg
   links:
     ######################################################################
     # Local Interlinks (Eth26/1 + Eth28/1 port-channel)

@@ -74,9 +74,13 @@ all:
               ansible_host: "{{ lab_settings.mgmt_prefix }}220"
         customer_ces:
           hosts:
+            CUST-A:
+              ansible_host: "{{ lab_settings.mgmt_prefix }}230"
             CUST-B:
               ansible_host: "{{ lab_settings.mgmt_prefix }}232"
             CUST-C:
               ansible_host: "{{ lab_settings.mgmt_prefix }}233"
             CUST-D:
               ansible_host: "{{ lab_settings.mgmt_prefix }}234"
+            CUST-Z:
+              ansible_host: "{{ lab_settings.mgmt_prefix }}231"
