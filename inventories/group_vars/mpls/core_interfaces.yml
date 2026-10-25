@@ -6,9 +6,17 @@ core_interfaces:
   - name: UNDERLAY_POOL
     ipv4_pool: 172.17.0.0/21
   p2p_links_profiles:
-  - name: UNDERLAY
+  - name: CORE
     ip_pool: UNDERLAY_POOL
     isis_hello_padding: true
+    isis_metric: 1000
+    isis_circuit_type: level-2
+    isis_authentication_mode: "md5"
+    isis_authentication_key: "ViLQY9CHEz5O37SKjYq6ow=="
+  - name: HUB
+    ip_pool: UNDERLAY_POOL
+    isis_hello_padding: true
+    isis_metric: 100000
     isis_circuit_type: level-2
     isis_authentication_mode: "md5"
     isis_authentication_key: "ViLQY9CHEz5O37SKjYq6ow=="
@@ -20,173 +28,205 @@ core_interfaces:
     isis_authentication_mode: "md5"
     isis_authentication_key: "ViLQY9CHEz5O37SKjYq6ow=="
   p2p_links:
+  ######################################################################
+  # Local Interlinks (Eth26/1 + Eth28/1 port-channel)
+  ######################################################################
   - id: 1
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-01, ALPHA-PE-02]
+    profile: CORE
+    nodes: [CYWE-A, CYWE-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-01"
-        interfaces: [Ethernet9, Ethernet10]
-      - node: "ALPHA-PE-02"
-        interfaces: [Ethernet9, Ethernet10]
+      - node: "CYWE-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "CYWE-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
   - id: 2
-    profile: UNDERLAY
-    nodes: [BETA-PE-01, BETA-PE-02]
+    profile: CORE
+    nodes: [FIBT-A, FIBT-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "BETA-PE-01"
-        interfaces: [Ethernet9, Ethernet10]
-      - node: "BETA-PE-02"
-        interfaces: [Ethernet9, Ethernet10]
+      - node: "FIBT-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "FIBT-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
   - id: 3
-    profile: UNDERLAY
-    nodes: [GAMMA-PE-01, GAMMA-PE-02]
+    profile: CORE
+    nodes: [TSHL-A, TSHL-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "GAMMA-PE-01"
-        interfaces: [Ethernet9, Ethernet10]
-      - node: "GAMMA-PE-02"
-        interfaces: [Ethernet9, Ethernet10]
+      - node: "TSHL-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "TSHL-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
   - id: 4
-    profile: UNDERLAY
-    nodes: [DELTA-PE-01, DELTA-PE-02]
+    profile: CORE
+    nodes: [CORP-A, CORP-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "DELTA-PE-01"
-        interfaces: [Ethernet9, Ethernet10]
-      - node: "DELTA-PE-02"
-        interfaces: [Ethernet9, Ethernet10]
+      - node: "CORP-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "CORP-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
   - id: 5
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-02, BETA-PE-01]
+    profile: CORE
+    nodes: [CYGA-A, CYGA-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-02"
-        interfaces: [Ethernet6]
-      - node: "BETA-PE-01"
-        interfaces: [Ethernet6]
+      - node: "CYGA-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "CYGA-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
   - id: 6
-    profile: UNDERLAY
-    nodes: [BETA-PE-02, GAMMA-PE-01]
+    profile: CORE
+    nodes: [CLAK-A, CLAK-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "BETA-PE-02"
-        interfaces: [Ethernet6]
-      - node: "GAMMA-PE-01"
-        interfaces: [Ethernet6]
+      - node: "CLAK-A"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+      - node: "CLAK-B"
+        interfaces: [Ethernet26/1, Ethernet28/1]
+  ######################################################################
+  # WAN Interlinks - Horizontal (single-member port-channels)
+  ######################################################################
   - id: 7
-    profile: UNDERLAY
-    nodes: [GAMMA-PE-02, DELTA-PE-01]
+    profile: CORE
+    nodes: [CYWE-B, FIBT-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "GAMMA-PE-02"
-        interfaces: [Ethernet6]
-      - node: "DELTA-PE-01"
-        interfaces: [Ethernet6]
+      - node: "CYWE-B"
+        interfaces: [Ethernet25/1]
+      - node: "FIBT-A"
+        interfaces: [Ethernet25/1]
   - id: 8
-    profile: UNDERLAY
-    nodes: [DELTA-PE-02, ALPHA-PE-01]
+    profile: CORE
+    nodes: [FIBT-B, TSHL-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "DELTA-PE-02"
-        interfaces: [Ethernet6]
-      - node: "ALPHA-PE-01"
-        interfaces: [Ethernet6]
+      - node: "FIBT-B"
+        interfaces: [Ethernet25/1]
+      - node: "TSHL-A"
+        interfaces: [Ethernet25/1]
   - id: 9
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-01, ALPHA-EDGE-01]
+    profile: CORE
+    nodes: [CORP-B, CYGA-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-01"
-        interfaces: [Ethernet8]
-      - node: "ALPHA-EDGE-01"
-        interfaces: [Ethernet10]
+      - node: "CORP-B"
+        interfaces: [Ethernet25/1]
+      - node: "CYGA-A"
+        interfaces: [Ethernet25/1]
   - id: 10
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-02, ALPHA-EDGE-01]
+    profile: CORE
+    nodes: [CYGA-B, CLAK-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-02"
-        interfaces: [Ethernet8]
-      - node: "ALPHA-EDGE-01"
-        interfaces: [Ethernet9]
+      - node: "CYGA-B"
+        interfaces: [Ethernet25/1]
+      - node: "CLAK-A"
+        interfaces: [Ethernet25/1]
+  ######################################################################
+  # WAN Interlinks - Vertical (single-member port-channels)
+  ######################################################################
   - id: 11
-    profile: UNDERLAY
-    nodes: [BETA-PE-01, BETA-EDGE-01]
+    profile: CORE
+    nodes: [CYWE-A, CORP-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "BETA-PE-01"
-        interfaces: [Ethernet8]
-      - node: "BETA-EDGE-01"
-        interfaces: [Ethernet10]
+      - node: "CYWE-A"
+        interfaces: [Ethernet25/1]
+      - node: "CORP-A"
+        interfaces: [Ethernet25/1]
   - id: 12
-    profile: UNDERLAY
-    nodes: [BETA-PE-02, BETA-EDGE-01]
+    profile: CORE
+    nodes: [TSHL-B, CLAK-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "BETA-PE-02"
-        interfaces: [Ethernet8]
-      - node: "BETA-EDGE-01"
-        interfaces: [Ethernet9]
+      - node: "TSHL-B"
+        interfaces: [Ethernet25/1]
+      - node: "CLAK-B"
+        interfaces: [Ethernet25/1]
+  ######################################################################
+  # WAN Interlinks - Cross-connects (single-member port-channels)
+  ######################################################################
   - id: 13
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-01, ALPHA-PE-03]
+    profile: CORE
+    nodes: [CYWE-B, CYGA-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-01"
-        interfaces: [Ethernet7]
-      - node: "ALPHA-PE-03"
-        interfaces: [Ethernet10]
+      - node: "CYWE-B"
+        interfaces: [Ethernet27/1]
+      - node: "CYGA-A"
+        interfaces: [Ethernet27/1]
   - id: 14
-    profile: UNDERLAY
-    nodes: [ALPHA-PE-02, ALPHA-PE-03]
+    profile: CORE
+    nodes: [FIBT-A, CORP-B]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "ALPHA-PE-02"
-        interfaces: [Ethernet7]
-      - node: "ALPHA-PE-03"
-        interfaces: [Ethernet9]
+      - node: "FIBT-A"
+        interfaces: [Ethernet27/1]
+      - node: "CORP-B"
+        interfaces: [Ethernet27/1]
+  ######################################################################
+  # Hub Links - SGRL-A (single-member port-channels)
+  ######################################################################
   - id: 15
-    profile: UNDERLAY
-    nodes: [DELTA-PE-01, THETA-PE-01]
+    profile: HUB
+    nodes: [SGRL-A, CYWE-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "DELTA-PE-01"
-        interfaces: [Ethernet5]
-      - node: "THETA-PE-01"
-        interfaces: [Ethernet10]
+      - node: "SGRL-A"
+        interfaces: [Ethernet27/1]
+      - node: "CYWE-A"
+        interfaces: [Ethernet1/1]
   - id: 16
-    profile: UNDERLAY
-    nodes: [DELTA-PE-02, THETA-PE-02]
+    profile: HUB
+    nodes: [SGRL-A, CORP-A]
     port_channel:
       mode: active
       nodes_child_interfaces:
-      - node: "DELTA-PE-02"
-        interfaces: [Ethernet5]
-      - node: "THETA-PE-02"
-        interfaces: [Ethernet10]
+      - node: "SGRL-A"
+        interfaces: [Ethernet28/1]
+      - node: "CORP-A"
+        interfaces: [Ethernet1/1]
+  ######################################################################
+  # Route Reflector Links (no port-channel)
+  ######################################################################
   - id: 17
-    profile: UNDERLAY
-    nodes: [THETA-PE-01, THETA-PE-02]
-    port_channel:
-      mode: active
-      nodes_child_interfaces:
-      - node: "THETA-PE-01"
-        interfaces: [Ethernet9]
-      - node: "THETA-PE-02"
-        interfaces: [Ethernet9]
+    profile: ROUTE_REFLECTORS
+    nodes: [CORP-R, CORP-A]
+    interfaces: [Ethernet1, Ethernet29/1]
+  - id: 18
+    profile: ROUTE_REFLECTORS
+    nodes: [CORP-R, CORP-B]
+    interfaces: [Ethernet2, Ethernet29/1]
+  - id: 19
+    profile: ROUTE_REFLECTORS
+    nodes: [FIBT-R, FIBT-A]
+    interfaces: [Ethernet1, Ethernet29/1]
+  - id: 20
+    profile: ROUTE_REFLECTORS
+    nodes: [FIBT-R, FIBT-B]
+    interfaces: [Ethernet2, Ethernet29/1]
+  - id: 21
+    profile: ROUTE_REFLECTORS
+    nodes: [CLAK-R, CLAK-A]
+    interfaces: [Ethernet1, Ethernet29/1]
+  - id: 22
+    profile: ROUTE_REFLECTORS
+    nodes: [CLAK-R, CLAK-B]
+    interfaces: [Ethernet2, Ethernet29/1]

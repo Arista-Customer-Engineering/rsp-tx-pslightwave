@@ -1,14 +1,5 @@
 ################################################
 # ESIs for the MPLS Fabric
 ################################################
-# 0000:####:#### - Service Provider Internal Use
-esi_CGNAT_HA_PWIRE_A: "0000:0000:0001"
-esi_CGNAT_HA_PWIRE_Z: "0000:0000:0002"
-
-# 1111:####:#### - PON Services
-esi_PON_SHELF_BETA_PUBLIC: "1111:0000:0001"
-esi_PON_SHELF_BETA_CGNAT: "1111:0000:0002"
-esi_PON_SHELF_BETA_MGMT: "1111:0000:0003"
-esi_PON_SHELF_OMNI_PUBLIC: "1111:0000:0004"
-esi_PON_SHELF_OMNI_CGNAT: "1111:0000:0005"
-esi_PON_SHELF_OMNI_MGMT: "1111:0000:0006"
+# 2222:####:#### - Customer VPWS Services
+esi_CUST_A_VPWS: "2222:0000:0001"

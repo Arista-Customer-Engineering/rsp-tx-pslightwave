@@ -11,264 +11,187 @@ topology:
       env:
         CLAB_MGMT_VRF: OOB
   nodes:
-    # MPLS Fabric Nodes
-    ALPHA-EDGE-01:
+    ######################################################################
+    # PE Nodes - 7280CR3AK-24D12
+    ######################################################################
+    CYWE-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.1
-      startup-config: inventories/intended/configs/ALPHA-EDGE-01.cfg
-    BETA-EDGE-01:
+      startup-config: inventories/intended/configs/CYWE-A.cfg
+    CYWE-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.2
-      startup-config: inventories/intended/configs/BETA-EDGE-01.cfg
-    ALPHA-PE-01:
+      startup-config: inventories/intended/configs/CYWE-B.cfg
+    CORP-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.3
-      startup-config: inventories/intended/configs/ALPHA-PE-01.cfg
-    ALPHA-PE-02:
+      startup-config: inventories/intended/configs/CORP-A.cfg
+    CORP-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.4
-      startup-config: inventories/intended/configs/ALPHA-PE-02.cfg
-    ALPHA-PE-03:
+      startup-config: inventories/intended/configs/CORP-B.cfg
+    FIBT-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.5
-      startup-config: inventories/intended/configs/ALPHA-PE-03.cfg
-    BETA-PE-01:
+      startup-config: inventories/intended/configs/FIBT-A.cfg
+    FIBT-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.6
-      startup-config: inventories/intended/configs/BETA-PE-01.cfg
-    BETA-PE-02:
+      startup-config: inventories/intended/configs/FIBT-B.cfg
+    CYGA-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.7
-      startup-config: inventories/intended/configs/BETA-PE-02.cfg
-    DELTA-PE-01:
+      startup-config: inventories/intended/configs/CYGA-A.cfg
+    CYGA-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.8
-      startup-config: inventories/intended/configs/DELTA-PE-01.cfg
-    DELTA-PE-02:
+      startup-config: inventories/intended/configs/CYGA-B.cfg
+    TSHL-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.9
-      startup-config: inventories/intended/configs/DELTA-PE-02.cfg
-    GAMMA-PE-01:
+      startup-config: inventories/intended/configs/TSHL-A.cfg
+    TSHL-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.10
-      startup-config: inventories/intended/configs/GAMMA-PE-01.cfg
-    GAMMA-PE-02:
+      startup-config: inventories/intended/configs/TSHL-B.cfg
+    CLAK-A:
       kind: ceos
       mgmt-ipv4: 192.168.128.11
-      startup-config: inventories/intended/configs/GAMMA-PE-02.cfg
-    THETA-PE-01:
+      startup-config: inventories/intended/configs/CLAK-A.cfg
+    CLAK-B:
       kind: ceos
       mgmt-ipv4: 192.168.128.12
-      startup-config: inventories/intended/configs/THETA-PE-01.cfg
-    THETA-PE-02:
+      startup-config: inventories/intended/configs/CLAK-B.cfg
+    SGRL-A:
       kind: ceos
-      mgmt-ipv4: 192.168.128.13
-      startup-config: inventories/intended/configs/THETA-PE-02.cfg
-    ALPHA-DHCP:
-      kind: linux
-      image: debian:bookworm-slim
-      mgmt-ipv4: 192.168.128.200
-      binds:
-        - dhcp/kea-dhcp4.conf:/etc/kea/kea-dhcp4.conf:ro
-        - dhcp/kea-dhcp6.conf:/etc/kea/kea-dhcp6.conf:ro
-        - dhcp/dnsmasq.conf:/etc/dnsmasq.conf:ro
-        - dhcp/startup.sh:/startup.sh:ro
-      exec:
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - sh -c 'export DEBIAN_FRONTEND=noninteractive && apt-get update &&
-          apt-get install -y --no-install-recommends -o Dpkg::Options::=--force-confold
-          kea-dhcp4-server kea-dhcp6-server dnsmasq iproute2 iputils-ping
-          tcpdump && mkdir -p /var/lib/kea /run/kea'
-        - sh -c 'nohup sh /startup.sh > /var/log/startup.log 2>&1 &'
-    ALPHA-CG-NAT:
+      mgmt-ipv4: 192.168.128.20
+      startup-config: inventories/intended/configs/SGRL-A.cfg
+    ######################################################################
+    # Route Reflectors - 7230R-4TX-4S
+    ######################################################################
+    CORP-R:
       kind: ceos
-      mgmt-ipv4: 192.168.128.210
-    BETA-CG-NAT:
+      mgmt-ipv4: 192.168.128.101
+      startup-config: inventories/intended/configs/CORP-R.cfg
+    FIBT-R:
       kind: ceos
-      mgmt-ipv4: 192.168.128.211
+      mgmt-ipv4: 192.168.128.102
+      startup-config: inventories/intended/configs/FIBT-R.cfg
+    CLAK-R:
+      kind: ceos
+      mgmt-ipv4: 192.168.128.103
+      startup-config: inventories/intended/configs/CLAK-R.cfg
+    ######################################################################
+    # Transit Provider Simulator
+    ######################################################################
     TRANSIT:
       kind: ceos
       mgmt-ipv4: 192.168.128.220
-    BETA-PON-01:
-      kind: ceos
-      startup-config: inventories/intended/configs/BETA-PON-01.cfg
-      mgmt-ipv4: 192.168.128.240
-    OMNI-PON-01:
-      kind: ceos
-      startup-config: inventories/intended/configs/OMNI-PON-01.cfg
-      mgmt-ipv4: 192.168.128.241
-    BETA-CPE-PUB:
+      startup-config: inventories/intended/configs/TRANSIT.cfg
+    ######################################################################
+    # Customer Endpoints
+    ######################################################################
+    CUST-A:
       kind: linux
       image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.250
-      binds:
-        - traffic/cpe-traffic.sh:/cpe-traffic.sh:ro
-        - cpe/dhcpcd.conf:/etc/dhcpcd.conf:ro
-      exec:
-        - apk add --no-cache dhcpcd lldpd
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - lldpd
-        - sh -c 'nohup udhcpc -i eth1 -b > /var/log/udhcpc.log 2>&1 &'
-        - sh -c 'nohup dhcpcd -6 eth1 &'
-        - sh -c 'nohup bash /cpe-traffic.sh > /var/log/cpe-traffic.log 2>&1 &'
-        - sh -c 'sleep 5 && ip route del default dev eth0 2>/dev/null; true' &
-    BETA-CPE-NAT:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.251
-      binds:
-        - traffic/cpe-traffic.sh:/cpe-traffic.sh:ro
-        - cpe/dhcpcd.conf:/etc/dhcpcd.conf:ro
-      exec:
-        - apk add --no-cache dhcpcd lldpd
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - lldpd
-        - sh -c 'nohup udhcpc -i eth1 -b > /var/log/udhcpc.log 2>&1 &'
-        - sh -c 'nohup dhcpcd -6 eth1 &'
-        - sh -c 'nohup bash /cpe-traffic.sh > /var/log/cpe-traffic.log 2>&1 &'
-        - sh -c 'sleep 5 && ip route del default dev eth0 2>/dev/null; true' &
-    # Customer (CPE) Linux nodes off OMNI-PON-01
-    OMNI-CPE-PUB:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.252
-      binds:
-        - traffic/cpe-traffic.sh:/cpe-traffic.sh:ro
-        - cpe/dhcpcd.conf:/etc/dhcpcd.conf:ro
-      exec:
-        - apk add --no-cache dhcpcd lldpd
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - lldpd
-        - sh -c 'nohup udhcpc -i eth1 -b > /var/log/udhcpc.log 2>&1 &'
-        - sh -c 'nohup dhcpcd -6 eth1 &'
-        - sh -c 'nohup bash /cpe-traffic.sh > /var/log/cpe-traffic.log 2>&1 &'
-        - sh -c 'sleep 5 && ip route del default dev eth0 2>/dev/null; true' &
-    OMNI-CPE-NAT:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.253
-      binds:
-        - traffic/cpe-traffic.sh:/cpe-traffic.sh:ro
-        - cpe/dhcpcd.conf:/etc/dhcpcd.conf:ro
-      exec:
-        - apk add --no-cache dhcpcd lldpd
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - lldpd
-        - sh -c 'nohup udhcpc -i eth1 -b > /var/log/udhcpc.log 2>&1 &'
-        - sh -c 'nohup dhcpcd -6 eth1 &'
-        - sh -c 'nohup bash /cpe-traffic.sh > /var/log/cpe-traffic.log 2>&1 &'
-        - sh -c 'sleep 5 && ip route del default dev eth0 2>/dev/null; true' &        
-        - sh -c 'sleep 5 && ip route del default dev eth0 2>/dev/null; true' &        
-    # MNO nodes — cell site router and core aggregation
-    #   MNO-CSR: simulates cell site router (eNB side), off BETA-PE-01
-    #   MNO-AGG: simulates MNO aggregation (MME/SGW side), dual-homed to THETA-PEs
-    MNO-CSR:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.63
+      mgmt-ipv4: 192.168.128.230
       exec:
         - ip link set eth1 up
-        - ip link set eth1 mtu 1500
-        - ip link add link eth1 name eth1.1001 type vlan id 1001
-        - ip link set eth1.1001 up
-        - ip addr add 172.19.128.120/31 dev eth1.1001
-        - ip link set eth1.1001 mtu 1450
-        - sysctl -w net.ipv6.conf.eth1.accept_ra=0
-        - sysctl -w net.ipv6.conf.eth1.autoconf=0
-        - sh -c 'nohup iperf3 -s -B 172.19.128.120 > /var/log/iperf3-csr.log 
-          2>&1 &'
-    MNO-AGG:
-      kind: linux
-      image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.62
-      exec:
-        - ip link set eth1 up
-        - ip link set eth1 mtu 1500
         - ip link set eth2 up
-        - ip link add link eth1 name eth1.1001 type vlan id 1001
-        - ip link set eth1.1001 up
-        - ip addr add 172.19.128.121/31 dev eth1.1001
-        - ip link set eth1.1001 mtu 1450
-        - ip route add 172.19.128.120/32 dev eth1.1001 src 172.19.128.121
-        - sysctl -w net.ipv6.conf.eth1.accept_ra=0
-        - sysctl -w net.ipv6.conf.eth1.autoconf=0
-        - sysctl -w net.ipv6.conf.eth2.accept_ra=0
-        - sysctl -w net.ipv6.conf.eth2.autoconf=0
-        - sh -c 'sleep 30 && while true; do iperf3 -c 172.19.128.120 -B 
-          172.19.128.121 -t 60 -P 4 -i 0 -M 1400 --logfile 
-          /var/log/iperf3-agg.log; sleep 2; done &'
-    # Traffic generator — iperf3/HTTP servers, loopbacks for well-known IPs
-    TRAFFIC-GEN:
+    CUST-B:
+      kind: ceos
+      mgmt-ipv4: 192.168.128.232
+      startup-config: inventories/intended/configs/CUST-B.cfg
+    CUST-C:
+      kind: ceos
+      mgmt-ipv4: 192.168.128.233
+      startup-config: inventories/intended/configs/CUST-C.cfg
+    CUST-D:
+      kind: ceos
+      mgmt-ipv4: 192.168.128.234
+      startup-config: inventories/intended/configs/CUST-D.cfg
+    CUST-Z:
       kind: linux
       image: ghcr.io/nicolaka/netshoot
-      mgmt-ipv4: 192.168.128.248
-      binds:
-        - traffic/tgen-startup.sh:/tgen-startup.sh:ro
+      mgmt-ipv4: 192.168.128.231
       exec:
-        - sh -c 'nohup bash /tgen-startup.sh > /var/log/tgen-startup.log 2>&1 &'
+        - ip link set eth1 up
   links:
-    # PE Interlinks
-    - endpoints: [ALPHA-PE-01:eth10, ALPHA-PE-02:eth10]
-    - endpoints: [ALPHA-PE-01:eth9, ALPHA-PE-02:eth9]
-    - endpoints: [BETA-PE-01:eth10, BETA-PE-02:eth10]
-    - endpoints: [BETA-PE-01:eth9, BETA-PE-02:eth9]
-    - endpoints: [DELTA-PE-01:eth10, DELTA-PE-02:eth10]
-    - endpoints: [DELTA-PE-01:eth9, DELTA-PE-02:eth9]
-    - endpoints: [GAMMA-PE-01:eth10, GAMMA-PE-02:eth10]
-    - endpoints: [GAMMA-PE-01:eth9, GAMMA-PE-02:eth9]
-      # Edge Routers
-    - endpoints: [ALPHA-PE-01:eth8, ALPHA-EDGE-01:eth10]
-    - endpoints: [ALPHA-PE-02:eth8, ALPHA-EDGE-01:eth9]
-    - endpoints: [BETA-PE-01:eth8, BETA-EDGE-01:eth10]
-    - endpoints: [BETA-PE-02:eth8, BETA-EDGE-01:eth9]
-      # Leafs
-    - endpoints: [ALPHA-PE-01:eth7, ALPHA-PE-03:eth10]
-    - endpoints: [ALPHA-PE-02:eth7, ALPHA-PE-03:eth9]
-      # POP Interlinks
-    - endpoints: [ALPHA-PE-02:eth6, BETA-PE-01:eth6]
-    - endpoints: [BETA-PE-02:eth6, GAMMA-PE-01:eth6]
-    - endpoints: [DELTA-PE-01:eth6, GAMMA-PE-02:eth6]
-    - endpoints: [DELTA-PE-02:eth6, ALPHA-PE-01:eth6]
-      # THETA-PE uplinks (reusing eth5 from former CPE-ACME-ENT)
-    - endpoints: [DELTA-PE-01:eth5, THETA-PE-01:eth10]
-    - endpoints: [DELTA-PE-02:eth5, THETA-PE-02:eth10]
-      # THETA-PE interlink
-    - endpoints: [THETA-PE-01:eth9, THETA-PE-02:eth9]
-      # MNO-AGG dual-homed to THETA-PEs
-    - endpoints: [THETA-PE-01:eth1, MNO-AGG:eth1]
-    - endpoints: [THETA-PE-02:eth1, MNO-AGG:eth2]
-      # MNO-CSR off BETA-PE-01
-    - endpoints: [BETA-PE-01:eth4, MNO-CSR:eth1]
-      # DHCP Server
-    - endpoints: [ALPHA-PE-03:eth2, ALPHA-DHCP:eth1]
-      # Transit Peering Router
-    - endpoints: [ALPHA-EDGE-01:eth1, TRANSIT:eth1]
-    - endpoints: [ALPHA-EDGE-01:eth2, TRANSIT:eth2]
-    - endpoints: [BETA-EDGE-01:eth1, TRANSIT:eth3]
-      # Transit Loopback for BGP peering, traffic generator upstream of TRANSIT
-    - endpoints: [TRANSIT:eth5, TRANSIT:eth6]
-      # CG-NAT Shelves
-    - endpoints: [ALPHA-EDGE-01:eth3, ALPHA-CG-NAT:eth1]
-    - endpoints: [ALPHA-PE-01:eth1, ALPHA-CG-NAT:eth2]
-    - endpoints: [ALPHA-PE-02:eth1, ALPHA-CG-NAT:eth3]
-      # CG-NAT Shelves
-    - endpoints: [BETA-EDGE-01:eth3, BETA-CG-NAT:eth1]
-    - endpoints: [BETA-PE-01:eth1, BETA-CG-NAT:eth2]
-    - endpoints: [BETA-PE-02:eth1, BETA-CG-NAT:eth3]
-      # PON Shelves
-    - endpoints: [BETA-PE-01:eth2, BETA-PON-01:eth1]
-    - endpoints: [BETA-PE-02:eth2, BETA-PON-01:eth2]
-    - endpoints: [DELTA-PE-02:eth2, OMNI-PON-01:eth1]
-    - endpoints: [GAMMA-PE-01:eth2, OMNI-PON-01:eth2]
-      # Customer CPE nodes off BETA-PON-01
-    - endpoints: [BETA-PON-01:eth3, BETA-CPE-PUB:eth1]
-    - endpoints: [BETA-PON-01:eth4, BETA-CPE-NAT:eth1]
-      # Customer CPE nodes off OMNI-PON-01
-    - endpoints: [OMNI-PON-01:eth3, OMNI-CPE-PUB:eth1]
-    - endpoints: [OMNI-PON-01:eth4, OMNI-CPE-NAT:eth1]    
-    - endpoints: [TRANSIT:eth4, TRAFFIC-GEN:eth1]
+    ######################################################################
+    # Local Interlinks (Eth26/1 + Eth28/1 port-channel)
+    ######################################################################
+    - endpoints: [CYWE-A:eth26_1, CYWE-B:eth26_1]
+    - endpoints: [CYWE-A:eth28_1, CYWE-B:eth28_1]
+    - endpoints: [FIBT-A:eth26_1, FIBT-B:eth26_1]
+    - endpoints: [FIBT-A:eth28_1, FIBT-B:eth28_1]
+    - endpoints: [TSHL-A:eth26_1, TSHL-B:eth26_1]
+    - endpoints: [TSHL-A:eth28_1, TSHL-B:eth28_1]
+    - endpoints: [CORP-A:eth26_1, CORP-B:eth26_1]
+    - endpoints: [CORP-A:eth28_1, CORP-B:eth28_1]
+    - endpoints: [CYGA-A:eth26_1, CYGA-B:eth26_1]
+    - endpoints: [CYGA-A:eth28_1, CYGA-B:eth28_1]
+    - endpoints: [CLAK-A:eth26_1, CLAK-B:eth26_1]
+    - endpoints: [CLAK-A:eth28_1, CLAK-B:eth28_1]
+    ######################################################################
+    # WAN Interlinks - Horizontal
+    ######################################################################
+    - endpoints: [CYWE-B:eth25_1, FIBT-A:eth25_1]
+    - endpoints: [FIBT-B:eth25_1, TSHL-A:eth25_1]
+    - endpoints: [CORP-B:eth25_1, CYGA-A:eth25_1]
+    - endpoints: [CYGA-B:eth25_1, CLAK-A:eth25_1]
+    ######################################################################
+    # WAN Interlinks - Vertical
+    ######################################################################
+    - endpoints: [CYWE-A:eth25_1, CORP-A:eth25_1]
+    - endpoints: [TSHL-B:eth25_1, CLAK-B:eth25_1]
+    ######################################################################
+    # WAN Interlinks - Cross-connects
+    ######################################################################
+    - endpoints: [CYWE-B:eth27_1, CYGA-A:eth27_1]
+    - endpoints: [FIBT-A:eth27_1, CORP-B:eth27_1]
+    ######################################################################
+    # Hub Links - SGRL-A
+    ######################################################################
+    - endpoints: [SGRL-A:eth27_1, CYWE-A:eth1_1]
+    - endpoints: [SGRL-A:eth28_1, CORP-A:eth1_1]
+    ######################################################################
+    # Route Reflector Links
+    ######################################################################
+    - endpoints: [CORP-R:eth1, CORP-A:eth29_1]
+    - endpoints: [CORP-R:eth2, CORP-B:eth29_1]
+    - endpoints: [FIBT-R:eth1, FIBT-A:eth29_1]
+    - endpoints: [FIBT-R:eth2, FIBT-B:eth29_1]
+    - endpoints: [CLAK-R:eth1, CLAK-A:eth29_1]
+    - endpoints: [CLAK-R:eth2, CLAK-B:eth29_1]
+    ######################################################################
+    # Transit Peering
+    ######################################################################
+    - endpoints: [CYWE-A:eth2_1, TRANSIT:eth1]
+    - endpoints: [CYWE-B:eth2_1, TRANSIT:eth2]
+    - endpoints: [FIBT-B:eth2_1, TRANSIT:eth3]
+    - endpoints: [TSHL-A:eth2_1, TRANSIT:eth4]
+    - endpoints: [CYGA-A:eth2_1, TRANSIT:eth5]
+      # TRANSIT internal loopback for carrier mesh
+    - endpoints: [TRANSIT:eth6, TRANSIT:eth7]
+    ######################################################################
+    # Customer Endpoints - CUST-A (VPWS, multihomed A-side)
+    ######################################################################
+    - endpoints: [SGRL-A:eth1, CUST-A:eth1]
+    - endpoints: [CORP-A:eth3_1, CUST-A:eth2]
+    ######################################################################
+    # Customer Endpoints - CUST-Z (VPWS, single-homed Z-side)
+    ######################################################################
+    - endpoints: [CLAK-B:eth3_1, CUST-Z:eth1]
+    ######################################################################
+    # DIA - CUST-B (multi-hop eBGP off SGRL-A)
+    ######################################################################
+    - endpoints: [SGRL-A:eth2, CUST-B:eth1]
+    ######################################################################
+    # DIA - CUST-C (VPWS from SGRL-A to CYWE-A patch panel)
+    ######################################################################
+    - endpoints: [SGRL-A:eth3, CUST-C:eth1]
+    - endpoints: [CYWE-A:eth4_1, CYWE-A:eth5_1]
+    ######################################################################
+    # DIA - CUST-D (direct full-table off CYGA-A)
+    ######################################################################
+    - endpoints: [CYGA-A:eth3_1, CUST-D:eth1]

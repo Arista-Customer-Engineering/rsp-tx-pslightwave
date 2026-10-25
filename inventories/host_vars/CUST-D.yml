@@ -1,0 +1,75 @@
+---
+# CUST-D: DIA customer directly peered with CYGA-A (full-table PE).
+# Receives the full internet routing table via eBGP.
+hostname: CUST-D
+
+aaa_authentication:
+  login:
+    default: local
+    console: local
+aaa_authorization:
+  exec:
+    default: local
+
+ip_routing: true
+service_routing_protocols_model: multi-agent
+
+local_users:
+  - name: admin
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$n5UzLR7bucITZ.fE$BoS3AU71MBIDlSsWb1NpH0P62l9AyanxImmA.9OKesBuClBXXae3oMf0fm1HA.3rxwzvbkbVl.QarZAHgm7V81
+
+management_interfaces:
+  - name: Management0
+    description: OOB_MANAGEMENT
+    shutdown: false
+    vrf: OOB
+    ip_address: 192.168.128.234/24
+    type: oob
+    gateway: 192.168.128.254
+    eos_cli: |
+      no lldp transmit
+      no lldp receive
+
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+    - name: OOB
+
+vrfs:
+  - name: OOB
+    ip_routing: false
+
+ethernet_interfaces:
+  - name: Ethernet1
+    description: "CYGA-A DIA uplink"
+    shutdown: false
+    ip_address: 198.51.100.24/31
+    switchport:
+      enabled: false
+
+static_routes:
+  - vrf: OOB
+    prefix: 0.0.0.0/0
+    next_hop: 192.168.128.254
+
+router_bgp:
+  as: '65503'
+  router_id: 198.51.100.24
+  neighbors:
+    - ip_address: 198.51.100.25
+      remote_as: '394437'
+      description: "CYGA-A INTERNET VRF (full table)"
+      shutdown: false
+  redistribute:
+    static:
+      enabled: true
+  address_family_ipv4:
+    neighbors:
+      - ip_address: 198.51.100.25
+        activate: true
+
+ip_route:
+  - destination: 80.52.0.0/24
+    interface: "null0"

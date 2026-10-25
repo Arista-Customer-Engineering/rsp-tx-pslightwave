@@ -1,0 +1,101 @@
+---
+# CUST-B: DIA customer on SGRL-A using multi-hop eBGP with static default.
+# CE has a static default route to SGRL-A and advertises its own prefix
+# (80.50.0.0/24) via multi-hop eBGP to SGRL-A's INTERNET VRF loopback.
+hostname: CUST-B
+
+aaa_authentication:
+  login:
+    default: local
+    console: local
+aaa_authorization:
+  exec:
+    default: local
+
+ip_routing: true
+service_routing_protocols_model: multi-agent
+
+local_users:
+  - name: admin
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$n5UzLR7bucITZ.fE$BoS3AU71MBIDlSsWb1NpH0P62l9AyanxImmA.9OKesBuClBXXae3oMf0fm1HA.3rxwzvbkbVl.QarZAHgm7V81
+
+management_interfaces:
+  - name: Management0
+    description: OOB_MANAGEMENT
+    shutdown: false
+    vrf: OOB
+    ip_address: 192.168.128.232/24
+    type: oob
+    gateway: 192.168.128.254
+    eos_cli: |
+      no lldp transmit
+      no lldp receive
+
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+    - name: OOB
+
+vrfs:
+  - name: OOB
+    ip_routing: false
+
+loopback_interfaces:
+  - name: Loopback0
+    description: "Multi-hop eBGP source"
+    shutdown: false
+    ip_address: 198.51.100.30/32
+
+ethernet_interfaces:
+  - name: Ethernet1
+    description: "SGRL-A DIA uplink"
+    shutdown: false
+    ip_address: 198.51.100.20/31
+    switchport:
+      enabled: false
+
+static_routes:
+  - vrf: OOB
+    prefix: 0.0.0.0/0
+    next_hop: 192.168.128.254
+  - prefix: 0.0.0.0/0
+    next_hop: 198.51.100.21
+
+router_bgp:
+  as: '65501'
+  router_id: 198.51.100.30
+  neighbors:
+    - ip_address: 80.100.0.101
+      remote_as: '394437'
+      description: "SGRL-A INTERNET VRF (multi-hop)"
+      shutdown: false
+      ebgp_multihop: 2
+      update_source: Loopback0
+  redistribute:
+    connected:
+      enabled: true
+      route_map: ADV_LO0
+  address_family_ipv4:
+    neighbors:
+      - ip_address: 80.100.0.101
+        activate: true
+
+prefix_lists:
+  - name: ADV_LO0
+    sequence_numbers:
+      - sequence: 10
+        action: "permit 198.51.100.30/32"
+      - sequence: 20
+        action: "permit 80.50.0.0/24"
+
+route_maps:
+  - name: ADV_LO0
+    sequence_numbers:
+      - sequence: 10
+        type: permit
+        match:
+          - "ip address prefix-list ADV_LO0"
+      - sequence: 20
+        type: deny

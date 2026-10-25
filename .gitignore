@@ -7,4 +7,6 @@ clab-**/**
 **/*.bak
 cv-token/*
 .venv/
+__pycache__/
+*.pyc
 **/*.tok

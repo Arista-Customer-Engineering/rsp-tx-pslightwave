@@ -72,6 +72,32 @@ eos_designs_custom_templates:
 ########################################################################################
 # Built-in Node Types
 ########################################################################################
+rr:
+  defaults:
+    virtual_router_mac_address: 00:c1:00:00:00:11
+    isis_sr:
+      ipv4_node_sid_index_base: 0
+    overlay_address_families: ["evpn"]
+    is_type: level-2
+    isis_system_id_prefix: '0000.0000'
+    loopback_ipv4_pool: 172.16.0.0/24
+    platform: "7280SR3"
+    #mpls_route_reflectors: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+    raw_eos_cli: |
+      platform tfa
+        interface mode relaying
+    filter:
+      only_vlans_in_use: true
+  nodes:
+    - name: "CORP-R"
+      id: 201
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "FIBT-R"
+      id: 202
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "CLAK-R"
+      id: 203
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"      
 pe:
   defaults:
     virtual_router_mac_address: 00:c1:00:00:00:11
@@ -82,84 +108,60 @@ pe:
     isis_system_id_prefix: '0000.0000'
     loopback_ipv4_pool: 172.16.0.0/24
     platform: "7280SR3"
-    mpls_route_reflectors: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+    mpls_route_reflectors: ["CORP-R", "FIBT-R", "CLAK-R"]
     # Revisit to simulate sFlow on vEOS / cEOS Labs
     raw_eos_cli: |
       platform tfa
         interface mode relaying
-
     filter:
-      always_include_vrfs_in_tenants: ["Inband Management", "DHCP Relay"]
+      always_include_vrfs_in_tenants: ["Inband Management"]
       only_vlans_in_use: true
   node_groups:
-  - group: "Edge Routers"
-    mpls_overlay_role: "server"
-    evpn_role: "server"
+  - group: "Core Routers"
+    mpls_overlay_role: "client"
+    evpn_role: "client"
     bgp_cluster_id: 172.16.0.0
     nodes:
-    - name: "ALPHA-EDGE-01"
+    - name: "CYWE-A"
       id: 1
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "BETA-EDGE-01"
+    - name: "CYWE-B"
       id: 2
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-  - group: "Limited Routes"
+    - name: "CORP-A"
+      id: 3
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "CORP-B"
+      id: 4
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "FIBT-A"
+      id: 5
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "FIBT-B"
+      id: 6
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}" 
+    - name: "CYGA-A"
+      id: 7
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "CYGA-B"
+      id: 8
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "TSHL-A"
+      id: 9
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "TSHL-B"
+      id: 10
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "CLAK-A"
+      id: 11
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+    - name: "CLAK-B"
+      id: 12
+      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"                            
+  - group: "Hub Routers"
     mpls_overlay_role: "client"
     evpn_role: "client"
     nodes:
-    - name: "ALPHA-PE-01"
-      id: 3
+    - name: "SGRL-A"
+      id: 101
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "ALPHA-PE-02"
-      id: 4
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "ALPHA-PE-03"
-      id: 5
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "BETA-PE-01"
-      id: 6
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-      # Per-node raw_eos_cli replaces (not merges with) pe.defaults.raw_eos_cli,
-      # so the platform tfa block has to be repeated here too.
-      raw_eos_cli: |
-        dhcp relay
-           ipv6 routes sync neighbor 172.17.0.3
-        platform tfa
-          interface mode relaying
-    - name: "BETA-PE-02"
-      id: 7
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-      raw_eos_cli: |
-        dhcp relay
-           ipv6 routes sync neighbor 172.17.0.2
-        platform tfa
-          interface mode relaying
-    - name: "GAMMA-PE-01"
-      id: 8
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "GAMMA-PE-02"
-      id: 9
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-      raw_eos_cli: |
-        dhcp relay
-           ipv6 routes sync neighbor 172.17.0.6
-        platform tfa
-          interface mode relaying
-    - name: "DELTA-PE-01"
-      id: 10
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-      raw_eos_cli: |
-        dhcp relay
-           ipv6 routes sync neighbor 172.17.0.5
-        platform tfa
-          interface mode relaying
-    - name: "DELTA-PE-02"
-      id: 11
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "THETA-PE-01"
-      id: 12
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-    - name: "THETA-PE-02"
-      id: 13
-      mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-

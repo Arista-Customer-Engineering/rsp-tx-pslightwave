@@ -2,18 +2,9 @@
 # Provider Edge Network Services and Connected Endpoints
 ########################################################################################
 network_services_keys:
-  # Services for managing the provider infrastructure
-  - name: inband_management     # mac_vrf_id_base: 0
-  - name: pon_mangement         # mac_vrf_id_base: 10000, pseudowire_rt_base: 15000
-  - name: cpe_management        # mac_vrf_id_base: 20000, pseudowire_rt_base: 25000
-  # Directly Customer Facing Services
-  - name: services_vpws        # mac_vrf_id_base: N/A,   pseudowire_rt_base: 28000
-  - name: services_internet     # mac_vrf_id_base: 30000, pseudowire_rt_base: 35000
-  - name: services_dhcp_relay   # mac_vrf_id_base: 40000, pseudowire_rt_base: 45000
-  - name: services_cg_nat       # mac_vrf_id_base: 50000, pseudowire_rt_base: 55000
-  # services_voice removed — voice VLAN/VRF eliminated
+  - name: inband_management
+  - name: services_vpws
+  - name: services_internet
 connected_endpoints_keys:
-  - key: endpoints_pon_shelves
-    type: pon_shelf
   - key: endpoints_vpws
     type: vpws

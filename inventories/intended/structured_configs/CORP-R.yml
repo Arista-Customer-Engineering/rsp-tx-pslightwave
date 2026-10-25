@@ -1,0 +1,368 @@
+aaa_authentication:
+  login:
+    default: local
+    console: local
+aaa_authorization:
+  exec:
+    default: local
+aaa_root:
+  disabled: true
+config_end: true
+daemon_terminattr:
+  cvaddrs:
+  - apiserver.cv-staging.corp.arista.io:443
+  cvauth:
+    method: token-secure
+    token_file: /mnt/flash/cv-onboarding-token
+  cvvrf: OOB
+  smashexcludes: ale,flexCounter,hardware,kni,pulse,strata
+enable_password:
+  disabled: true
+eos_cli: "platform tfa\n  interface mode relaying\n"
+errdisable:
+  recovery_interval: 30
+ethernet_interfaces:
+- name: Ethernet1
+  description: P2P_CORP-A_Ethernet29/1
+  shutdown: false
+  mtu: 9214
+  ip_address: 172.17.0.32/31
+  isis_enable: CORE
+  isis_metric: 16777214
+  isis_network_point_to_point: true
+  isis_circuit_type: level-2
+  isis_hello_padding: true
+  isis_authentication:
+    both:
+      key_type: '7'
+      key: ViLQY9CHEz5O37SKjYq6ow==
+      mode: md5
+  mpls:
+    ip: true
+  metadata:
+    peer: CORP-A
+    peer_interface: Ethernet29/1
+    peer_type: pe
+  switchport:
+    enabled: false
+- name: Ethernet2
+  description: P2P_CORP-B_Ethernet29/1
+  shutdown: false
+  mtu: 9214
+  ip_address: 172.17.0.34/31
+  isis_enable: CORE
+  isis_metric: 16777214
+  isis_network_point_to_point: true
+  isis_circuit_type: level-2
+  isis_hello_padding: true
+  isis_authentication:
+    both:
+      key_type: '7'
+      key: ViLQY9CHEz5O37SKjYq6ow==
+      mode: md5
+  mpls:
+    ip: true
+  metadata:
+    peer: CORP-B
+    peer_interface: Ethernet29/1
+    peer_type: pe
+  switchport:
+    enabled: false
+event_monitor:
+  enabled: true
+hostname: CORP-R
+interface_defaults:
+  mtu: 8000
+ip_dhcp_relay:
+  information_option: true
+ip_icmp_redirect: false
+ip_name_server:
+  vrfs:
+  - name: OOB
+    servers:
+    - ip_address: 8.8.8.8
+    - ip_address: 1.1.1.1
+ip_routing: true
+load_interval:
+  default: 1
+local_users:
+- name: admin
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$n5UzLR7bucITZ.fE$BoS3AU71MBIDlSsWb1NpH0P62l9AyanxImmA.9OKesBuClBXXae3oMf0fm1HA.3rxwzvbkbVl.QarZAHgm7V81
+- name: dave.watkins
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$n5UzLR7bucITZ.fE$BoS3AU71MBIDlSsWb1NpH0P62l9AyanxImmA.9OKesBuClBXXae3oMf0fm1HA.3rxwzvbkbVl.QarZAHgm7V81
+logging:
+  console: disabled
+  buffered:
+    size: 64000
+    level: debugging
+  synchronous:
+    level: debugging
+  format:
+    timestamp: high-resolution
+loopback_interfaces:
+- name: Loopback0
+  description: ROUTER_ID
+  shutdown: false
+  ip_address: 172.16.0.201/32
+  isis_enable: CORE
+  isis_passive: true
+  node_segment:
+    ipv4_index: 201
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+  - name: OOB
+management_console:
+  idle_timeout: 60
+management_interfaces:
+- name: Management0
+  description: OOB_MANAGEMENT
+  shutdown: false
+  vrf: OOB
+  ip_address: 192.168.128.101/24
+  type: oob
+  gateway: 192.168.128.254
+  eos_cli: 'no lldp transmit
+
+    no lldp receive
+
+    '
+management_ssh:
+  idle_timeout: 15
+  enable: false
+  vrfs:
+  - name: default
+    enable: true
+  - name: OOB
+    enable: true
+management_tech_support:
+  policy_show_tech_support:
+    exclude_commands:
+    - command: show platform fap ipv6 route
+    - command: show ipv6 bgp vrf all
+    - command: show ipv6 route vrf all detail
+metadata:
+  is_deployed: true
+  platform: 7280SR3
+  dc_name: RSP
+  fabric_name: mpls
+  cv_tags:
+    device_tags:
+    - name: topology_hint_datacenter
+      value: RSP
+    - name: topology_hint_fabric
+      value: mpls
+mpls:
+  ip: true
+ntp:
+  servers:
+  - name: 192.5.41.209
+    preferred: true
+  - name: 192.5.41.40
+  - name: 192.5.41.41
+  vrf: OOB
+router_bfd:
+  multihop:
+    interval: 300
+    min_rx: 300
+    multiplier: 3
+router_bgp:
+  as: '65000'
+  router_id: 172.16.0.201
+  maximum_paths:
+    paths: 4
+  bgp_cluster_id: 172.16.0.201
+  bgp:
+    default:
+      ipv4_unicast: false
+  peer_groups:
+  - name: MPLS-OVERLAY-PEERS
+    metadata:
+      type: mpls
+    remote_as: '65000'
+    update_source: Loopback0
+    route_reflector_client: true
+    bfd: false
+    send_community: all
+    maximum_routes: 0
+  neighbors:
+  - ip_address: 172.16.0.11
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CLAK-A
+    description: CLAK-A_Loopback0
+  - ip_address: 172.16.0.12
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CLAK-B
+    description: CLAK-B_Loopback0
+  - ip_address: 172.16.0.3
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CORP-A
+    description: CORP-A_Loopback0
+  - ip_address: 172.16.0.4
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CORP-B
+    description: CORP-B_Loopback0
+  - ip_address: 172.16.0.7
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CYGA-A
+    description: CYGA-A_Loopback0
+  - ip_address: 172.16.0.8
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CYGA-B
+    description: CYGA-B_Loopback0
+  - ip_address: 172.16.0.1
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CYWE-A
+    description: CYWE-A_Loopback0
+  - ip_address: 172.16.0.2
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: CYWE-B
+    description: CYWE-B_Loopback0
+  - ip_address: 172.16.0.5
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: FIBT-A
+    description: FIBT-A_Loopback0
+  - ip_address: 172.16.0.6
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: FIBT-B
+    description: FIBT-B_Loopback0
+  - ip_address: 172.16.0.101
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: SGRL-A
+    description: SGRL-A_Loopback0
+  - ip_address: 172.16.0.9
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: TSHL-A
+    description: TSHL-A_Loopback0
+  - ip_address: 172.16.0.10
+    peer_group: MPLS-OVERLAY-PEERS
+    metadata:
+      peer: TSHL-B
+    description: TSHL-B_Loopback0
+  address_family_evpn:
+    neighbor_default:
+      encapsulation: mpls
+    peer_groups:
+    - name: MPLS-OVERLAY-PEERS
+      activate: true
+  address_family_rtc:
+    peer_groups:
+    - name: MPLS-OVERLAY-PEERS
+      activate: true
+      default_route_target:
+        only: true
+  address_family_ipv4:
+    peer_groups:
+    - name: MPLS-OVERLAY-PEERS
+      activate: false
+router_isis:
+  instance: CORE
+  net: 49.0001.1720.1600.0201.00
+  router_id: 172.16.0.201
+  is_type: level-2
+  log_adjacency_changes: true
+  timers:
+    local_convergence:
+      protected_prefixes: true
+      delay: 10000
+  address_family_ipv4:
+    enabled: true
+    maximum_paths: 4
+    fast_reroute_ti_lfa:
+      mode: node-protection
+  segment_routing_mpls:
+    enabled: true
+    router_id: 172.16.0.201
+service_routing_protocols_model: multi-agent
+spanning_tree:
+  mode: none
+static_routes:
+- vrf: OOB
+  prefix: 0.0.0.0/0
+  next_hop: 192.168.128.254
+switchport_default:
+  mode: routed
+transceiver_qsfp_default_mode_4x10: false
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 3500
+    ending: 3999
+vrfs:
+- name: OOB
+  ip_routing: false
+monitor_connectivity:
+  shutdown: false
+  interval: 1
+  interface_sets:
+  - name: Underlay
+    interfaces: Loopback0
+  hosts:
+  - name: CYWE-A
+    ip: 172.16.0.1
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CYWE-B
+    ip: 172.16.0.2
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CORP-A
+    ip: 172.16.0.3
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CORP-B
+    ip: 172.16.0.4
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: FIBT-A
+    ip: 172.16.0.5
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: FIBT-B
+    ip: 172.16.0.6
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CYGA-A
+    ip: 172.16.0.7
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CYGA-B
+    ip: 172.16.0.8
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: TSHL-A
+    ip: 172.16.0.9
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: TSHL-B
+    ip: 172.16.0.10
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CLAK-A
+    ip: 172.16.0.11
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: CLAK-B
+    ip: 172.16.0.12
+    icmp_echo_size: 7000
+    local_interfaces: Underlay
+  - name: SGRL-A
+    ip: 172.16.0.101
+    icmp_echo_size: 7000
+    local_interfaces: Underlay

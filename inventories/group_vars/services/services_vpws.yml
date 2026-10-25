@@ -1,43 +1,47 @@
 services_vpws:
-  - name: "MNO_EVC_SVCS"
-    # mac_vrf_id_base: 20000
+  - name: "VPWS_SERVICES"
     pseudowire_rt_base: 28000
     point_to_point_services:
-      - name: "MNO-EVC1001"
+      ######################################################################
+      # CUST-A <-> CUST-Z: Multihomed A-side (ESI LAG), single-homed Z-side
+      ######################################################################
+      - name: "CUST-A-TO-CUST-Z"
         type: "vpws-pseudowire"
         subinterfaces:
-          - number: 1001
+          - number: 100
             structured_config:
-              # sflow:
-              #   enable: true
               encapsulation_vlan:
                 client:
                   encapsulation: "dot1q"
-                  vlan: 1001
-                network:        
+                  vlan: 100
+                network:
         endpoints:
           - id: 1
-            nodes: ["BETA-PE-01"]
-            interfaces: ["Ethernet4"]
+            nodes: ["SGRL-A", "CORP-A"]
+            interfaces: ["Ethernet1", "Ethernet3/1"]
+            port_channel:
+              mode: "active"
+              short_esi: "{{ esi_CUST_A_VPWS }}"
           - id: 2
-            nodes: ["THETA-PE-01"]
-            interfaces: ["Ethernet1"]
-      - name: "MNO-EVC1002"
+            nodes: ["CLAK-B"]
+            interfaces: ["Ethernet3/1"]
+      ######################################################################
+      # CUST-C DIA VPWS: SGRL-A -> CYWE-A (full-table PE via patch panel)
+      ######################################################################
+      - name: "DIA-CUST-C-VPWS"
         type: "vpws-pseudowire"
         subinterfaces:
-          - number: 1002
+          - number: 200
             structured_config:
-              # sflow:
-              #   enable: true
               encapsulation_vlan:
                 client:
                   encapsulation: "dot1q"
-                  vlan: 1002
-                network:        
+                  vlan: 200
+                network:
         endpoints:
           - id: 1
-            nodes: ["BETA-PE-01"]
-            interfaces: ["Ethernet4"]
+            nodes: ["SGRL-A"]
+            interfaces: ["Ethernet3"]
           - id: 2
-            nodes: ["THETA-PE-01"]
-            interfaces: ["Ethernet1"]            
+            nodes: ["CYWE-A"]
+            interfaces: ["Ethernet4/1"]

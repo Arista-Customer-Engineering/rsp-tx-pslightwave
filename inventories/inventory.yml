@@ -24,57 +24,59 @@ all:
       children:
         services:
           children:
-            edge_routers:
+            rr_routers:
               vars:
-                type: "pe"
+                type: "rr"
               hosts:
-                ALPHA-EDGE-01:
-                  ansible_host: "{{ lab_settings.mgmt_prefix }}1"
-                BETA-EDGE-01:
-                  ansible_host: "{{ lab_settings.mgmt_prefix }}2"
+                CORP-R:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}101"
+                FIBT-R:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}102"
+                CLAK-R:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}103"
             pe_routers:
               vars:
                 type: "pe"
               hosts:
-                ALPHA-PE-01:
+                CYWE-A:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}1"
+                CYWE-B:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}2"
+                CORP-A:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}3"
-                ALPHA-PE-02:
+                CORP-B:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}4"
-                ALPHA-PE-03:
-                  ansible_host: "{{ lab_settings.mgmt_prefix }}5"               
-                BETA-PE-01:
+                FIBT-A:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}5"
+                FIBT-B:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}6"
-                BETA-PE-02:
+                CYGA-A:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}7"
-                DELTA-PE-01:
+                CYGA-B:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}8"
-                DELTA-PE-02:
+                TSHL-A:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}9"
-                GAMMA-PE-01:
+                TSHL-B:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}10"
-                GAMMA-PE-02:
+                CLAK-A:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}11"
-                THETA-PE-01:
+                CLAK-B:
                   ansible_host: "{{ lab_settings.mgmt_prefix }}12"
-                THETA-PE-02:
-                  ansible_host: "{{ lab_settings.mgmt_prefix }}13"                  
+                SGRL-A:
+                  ansible_host: "{{ lab_settings.mgmt_prefix }}20"
 
     #################### END OF MPLS FABRIC ####################
     non_fabric_nodes:
       children:
-        pon_shelves:
-          hosts:
-            BETA-PON-01:
-              ansible_host: "{{ lab_settings.mgmt_prefix }}240"
-            OMNI-PON-01:
-              ansible_host: "{{ lab_settings.mgmt_prefix }}241"
         transit_providers:
           hosts:
             TRANSIT:
               ansible_host: "{{ lab_settings.mgmt_prefix }}220"
-        cg_nat_appliances:
+        customer_ces:
           hosts:
-            ALPHA-CG-NAT:
-              ansible_host: "{{ lab_settings.mgmt_prefix }}210"
-            BETA-CG-NAT:
-              ansible_host: "{{ lab_settings.mgmt_prefix }}211"
+            CUST-B:
+              ansible_host: "{{ lab_settings.mgmt_prefix }}232"
+            CUST-C:
+              ansible_host: "{{ lab_settings.mgmt_prefix }}233"
+            CUST-D:
+              ansible_host: "{{ lab_settings.mgmt_prefix }}234"

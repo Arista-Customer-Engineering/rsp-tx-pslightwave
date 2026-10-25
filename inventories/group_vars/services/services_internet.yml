@@ -1,5 +1,5 @@
 #######################################################################################
-# All Internet Services - Transits, Peering, PON Systems and Dedicated Internet
+# All Internet Services - Transits, Peering, and Dedicated Internet
 #######################################################################################
 services_internet: # Network services key
   - name: "INTERNET"
@@ -10,11 +10,6 @@ services_internet: # Network services key
           vrfs:
             - name: "INTERNET"
               ipv6_routing: true
-          # router_general:
-          #   control_functions:
-          #     code_units:
-          #       - name: INTERNET_FILTERS
-          #         content: "{{ lookup('file', 'internet_filters.rcf') }}"
         description: "Public INTERNET VRF"
         address_families: ["evpn"]
         vrf_id: 30000
@@ -29,32 +24,45 @@ services_internet: # Network services key
         static_routes:
           - prefix: "80.0.0.0/16"
             interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
             distance: 255
           - prefix: "81.0.0.0/16"
             interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
             distance: 255
           - prefix: "82.0.0.0/16"
             interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
             distance: 255
           ########### END OF SUMMARY ROUTE PINNING ###############
           ########### CUSTOMER STATIC ALLOCATIONS ################
+          - prefix: "80.50.0.0/24"
+            interface: "null0"
+            nodes: ["SGRL-A"]
+            distance: 254
+          - prefix: "80.51.0.0/24"
+            interface: "null0"
+            nodes: ["CYWE-A"]
+            distance: 254
+          - prefix: "80.52.0.0/24"
+            interface: "null0"
+            nodes: ["CYGA-A"]
+            distance: 254
           ########## END OF CUSTOMER STATIC ALLOCATIONS ##########
+          ########### CUST-B MULTI-HOP eBGP STATIC ###############
+          - prefix: "198.51.100.30/32"
+            next_hop: "198.51.100.20"
+            nodes: ["SGRL-A"]
+          ########### END OF CUST-B MULTI-HOP eBGP STATIC ########
         ipv6_static_routes:
           ############### SUMMARY ROUTE PINNING #################
           - prefix: "0::0/0"
             interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
             distance: 255
           - prefix: "2001:db8:8000::/33"
             interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
-            distance: 255
-          - prefix: "0::0/0"
-            interface: "null0"
-            nodes: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
             distance: 255
           ########### END OF SUMMARY ROUTE PINNING ###############
           ########### CUSTOMER STATIC ALLOCATIONS ################
@@ -62,10 +70,10 @@ services_internet: # Network services key
         ########################################################
         l3_interfaces:
           ############# Transit Peering Point to Points ############
-          - nodes: ["ALPHA-EDGE-01"]
-            interfaces: ["Ethernet1"]
+          - nodes: ["CYWE-A"]
+            interfaces: ["Ethernet2/1"]
             ip_addresses: ["198.51.100.1/31"]
-            descriptions: ["TRANSIT-01 Peering"]
+            descriptions: ["Arelion Peering"]
             structured_config:
               ipv6_enable: true
               ipv6_addresses:
@@ -73,10 +81,10 @@ services_internet: # Network services key
               ipv6_nd:
                 ra:
                   disabled: true
-          - nodes: ["ALPHA-EDGE-01"]
-            interfaces: ["Ethernet2"]
+          - nodes: ["CYWE-B"]
+            interfaces: ["Ethernet2/1"]
             ip_addresses: ["198.51.100.3/31"]
-            descriptions: ["TRANSIT-02 Peering"]
+            descriptions: ["Cogent Peering"]
             structured_config:
               ipv6_enable: true
               ipv6_addresses:
@@ -84,10 +92,10 @@ services_internet: # Network services key
               ipv6_nd:
                 ra:
                   disabled: true
-          - nodes: ["BETA-EDGE-01"]
-            interfaces: ["Ethernet1"]
+          - nodes: ["FIBT-B"]
+            interfaces: ["Ethernet2/1"]
             ip_addresses: ["198.51.100.5/31"]
-            descriptions: ["TRANSIT-03 Peering"]
+            descriptions: ["Lumen Peering"]
             structured_config:
               ipv6_enable: true
               ipv6_addresses:
@@ -95,98 +103,138 @@ services_internet: # Network services key
               ipv6_nd:
                 ra:
                   disabled: true
-          ############# END OF Transit Peering Point to Points ############
-          ############# CG-NAT Appliance Point to Points ############
-          - nodes: ["ALPHA-EDGE-01"]
-            interfaces: ["Ethernet3.10"]
+          - nodes: ["TSHL-A"]
+            interfaces: ["Ethernet2/1"]
             ip_addresses: ["198.51.100.7/31"]
-            descriptions: ["CG-NAT-01"]
-          - nodes: ["BETA-EDGE-01"]
-            interfaces: ["Ethernet3.10"]
+            descriptions: ["NTT Peering"]
+            structured_config:
+              ipv6_enable: true
+              ipv6_addresses:
+                - "2604::1/127"
+              ipv6_nd:
+                ra:
+                  disabled: true
+          - nodes: ["CYGA-A"]
+            interfaces: ["Ethernet2/1"]
             ip_addresses: ["198.51.100.9/31"]
-            descriptions: ["CG-NAT-02"]
-          ############# END OF CG-NAT Appliance Point to Points ############
+            descriptions: ["GTT Peering"]
+            structured_config:
+              ipv6_enable: true
+              ipv6_addresses:
+                - "2605::1/127"
+              ipv6_nd:
+                ra:
+                  disabled: true
+          ############# END OF Transit Peering Point to Points ############
+          ############# DIA Customer Point to Points ############
+          - nodes: ["SGRL-A"]
+            interfaces: ["Ethernet2"]
+            ip_addresses: ["198.51.100.21/31"]
+            descriptions: ["DIA: CUST-B (multi-hop eBGP)"]
+          - nodes: ["CYWE-A"]
+            interfaces: ["Ethernet5/1.200"]
+            ip_addresses: ["198.51.100.23/31"]
+            descriptions: ["DIA: CUST-C (VPWS patch port)"]
+            structured_config:
+              encapsulation_vlan:
+                client:
+                  encapsulation: "dot1q"
+                  vlan: 200
+          - nodes: ["CYGA-A"]
+            interfaces: ["Ethernet3/1"]
+            ip_addresses: ["198.51.100.25/31"]
+            descriptions: ["DIA: CUST-D (full table)"]
+          ############# END OF DIA Customer Point to Points ############
         bgp_peer_groups:
-          - name: "CGNAT_APPLIANCE_INTERNET_VRF"
-            local_as: 3791
-            remote_as: 65100
+          - name: "PROVIDER"
+            local_as: 394437
+            address_family_ipv4:
+          - name: "DIA_FULL_TABLE"
+            local_as: 394437
+          - name: "DIA_DEFAULT_ONLY"
+            local_as: 394437
             default_originate:
               enabled: true
               always: true
             route_map_out: "DEFAULT_ONLY"
-          - name: "PROVIDER"
-            local_as: 3791
-            address_family_ipv4:
-              #rcf_in: "PROVIDER_OUT_V4(provider_routes_ipv4)"
-              #rcf_out: "PROVIDER_OUT_V4(provider_routes_ipv4)"
         bgp_peers:
           ########### TRANSIT IPv4 PEERS ###########
-          - nodes: ["ALPHA-EDGE-01"]
+          - nodes: ["CYWE-A"]
             peer_group: PROVIDER
             description: "AS1299 Arelion"
             ip_address: "198.51.100.0"
             shutdown: false
             remote_as: 1299
-          - nodes: ["ALPHA-EDGE-01"]
+          - nodes: ["CYWE-B"]
             peer_group: PROVIDER
-            description: "AS13760 Uniti"
+            description: "AS174 Cogent"
             ip_address: "198.51.100.2"
             shutdown: false
-            remote_as: 13760
-          - nodes: ["BETA-EDGE-01"]
+            remote_as: 174
+          - nodes: ["FIBT-B"]
             peer_group: PROVIDER
-            description: "AS2711 Segra"
+            description: "AS3356 Lumen"
             ip_address: "198.51.100.4"
             shutdown: false
-            remote_as: 2711
+            remote_as: 3356
+          - nodes: ["TSHL-A"]
+            peer_group: PROVIDER
+            description: "AS2914 NTT"
+            ip_address: "198.51.100.6"
+            shutdown: false
+            remote_as: 2914
+          - nodes: ["CYGA-A"]
+            peer_group: PROVIDER
+            description: "AS3257 GTT"
+            ip_address: "198.51.100.8"
+            shutdown: false
+            remote_as: 3257
           ########### TRANSIT IPv6 PEERS ###########
-          - nodes: ["ALPHA-EDGE-01"]
+          - nodes: ["CYWE-A"]
             peer_group: PROVIDER
             description: "AS1299 Arelion"
             ip_address: "2601::0"
             shutdown: false
             remote_as: 1299
-          - nodes: ["ALPHA-EDGE-01"]
+          - nodes: ["CYWE-B"]
             peer_group: PROVIDER
-            description: "AS13760 Uniti"
+            description: "AS174 Cogent"
             ip_address: "2602::0"
             shutdown: false
-            remote_as: 13760
-          - nodes: ["BETA-EDGE-01"]
+            remote_as: 174
+          - nodes: ["FIBT-B"]
             peer_group: PROVIDER
-            description: "AS2711 Segra"
+            description: "AS3356 Lumen"
             ip_address: "2603::0"
             shutdown: false
-            remote_as: 2711
-          ########### CG-NAT APPLIANCES ###########
-          - nodes: ["ALPHA-EDGE-01"]
-            description: "CG-NAT-01 Port 1"
-            peer_group: "CGNAT_APPLIANCE_INTERNET_VRF"
-            ip_address: "198.51.100.6"
-          - nodes: ["BETA-EDGE-01"]
-            description: "CG-NAT-02 Port 1"
+            remote_as: 3356
+          - nodes: ["TSHL-A"]
+            peer_group: PROVIDER
+            description: "AS2914 NTT"
+            ip_address: "2604::0"
             shutdown: false
-            peer_group: "CGNAT_APPLIANCE_INTERNET_VRF"
-            ip_address: "198.51.100.8"
-        # Subscriber DNS queries land here (default route via the CG-NAT appliance),
-        # so INTERNET needs a real route to the DHCP vrf's subnet (192.168.100.0/24)
-        # where the DNS server lives. DHCP vrf redistributes connected+static under
-        # this RT (see ALPHA-PE-03's router_bgp), so a plain import is enough.
-        additional_route_targets:
-          - type: "import"
-            address_family: "evpn"
-            route_target: "65000:40000" # DHCP VRF
-        # additional_route_targets:
-        #   - type: "import"
-        #     address_family: "evpn"
-        #     route_target: "65000:50000" # CGNAT VRF
-        #   - type: "import"
-        #     address_family: "evpn"
-        #     route_target: "rcf FILTER_INTERNET_IMPORTS()"
-        svis:
-          - id: 1001
-            enabled: true
-            profile: "PUBLIC DHCP"
-            name: "PON_SHELF_SHARED_PUBLIC"
-            ip_address_virtual: "2.3.4.1/24"
-            ipv6_address_virtuals: ["2001:db8:8234:0000::1/64"]
+            remote_as: 2914
+          - nodes: ["CYGA-A"]
+            peer_group: PROVIDER
+            description: "AS3257 GTT"
+            ip_address: "2605::0"
+            shutdown: false
+            remote_as: 3257
+          ########### DIA CUSTOMER PEERS ###########
+          - nodes: ["SGRL-A"]
+            peer_group: DIA_DEFAULT_ONLY
+            description: "DIA: CUST-B (multi-hop eBGP)"
+            ip_address: "198.51.100.30"
+            remote_as: 65501
+            ebgp_multihop: 2
+            set_ipv4_next_hop: "198.51.100.21"
+          - nodes: ["CYWE-A"]
+            peer_group: DIA_FULL_TABLE
+            description: "DIA: CUST-C (VPWS)"
+            ip_address: "198.51.100.22"
+            remote_as: 65502
+          - nodes: ["CYGA-A"]
+            peer_group: DIA_FULL_TABLE
+            description: "DIA: CUST-D (full table)"
+            ip_address: "198.51.100.24"
+            remote_as: 65503

@@ -1,6 +1,6 @@
-# TRANSIT/ALPHA-CG-NAT/BETA-CG-NAT are raw eos_cli_config_gen host_vars
-# (see their own file headers) - they never go through eos_designs, so
+# TRANSIT is a raw eos_cli_config_gen host_vars node
+# (see its own file header) - it never goes through eos_designs, so
 # there's no inventories/intended/structured_configs/<hostname>.yml for
-# them to read. This tells eos_cli_config_gen to read structured config
+# it to read. This tells eos_cli_config_gen to read structured config
 # straight from hostvars instead.
 read_structured_config_from_file: false

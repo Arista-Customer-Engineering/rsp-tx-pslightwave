@@ -1,16 +1,4 @@
-services_pon_mgmt:
-  - name: "CPE Management Services"
-    mac_vrf_id_base: 20000
-    vrfs:
-      - name: "CPE_MGMT"
-        description: "CPE MANAGEMENT SERVICES"
-        address_families: [ "evpn" ]
-        vrf_id: 20000
-        vtep_diagnostic:
-          loopback: 20
-          loopback_description: "CPE Management Loopback"
-          loopback_ip_range: 172.16.10.0/24
-        svis:
-          - id: 1001
-            name: "CPE-MGMT"
-            ip_address_virtual: "172.31.255.1/24"
+########################################################
+# CPE Management Services - Not applicable to current customer topology
+########################################################
+# services_pon_mgmt:
