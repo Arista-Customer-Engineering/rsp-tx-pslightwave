@@ -34,7 +34,7 @@
 #       with_items: "{{ c1.files }}"
 
 - name: Deploy all configurations
-  hosts: mpls:transit_providers:cg_nat_appliances
+  hosts: mpls:non_fabric_nodes
   gather_facts: false
   tasks:
     - name: Deploy configuration to device
