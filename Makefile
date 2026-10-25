@@ -32,6 +32,10 @@ install: install-uv
 	uv pip install --python $(PYTHON) 'ansible-core>=2.16.0,<2.21.0'
 	$(ANSIBLE_GALAXY) collection install --upgrade -r requirements.yml -p collections/
 	$(ANSIBLE_GALAXY) collection install --force --no-deps -p collections/ $(EOS_FORK_URL)
+	@# Workaround: AVD 6.4.0 Galaxy package omits plugin_utils/constants.py
+	@test -f $(AVD_DIR)/plugins/plugin_utils/constants.py || \
+		printf 'from ansible.release import __version__ as ansible_version\nANSIBLE_ABOVE_2_19 = ansible_version.startswith(("2.2", "2.19"))\n' \
+		> $(AVD_DIR)/plugins/plugin_utils/constants.py
 	uv pip install --python $(PYTHON) -r $(AVD_DIR)/requirements.txt
 
 build: install
