@@ -24,7 +24,7 @@ isis_ti_lfa:
 overlay_routing_protocol: ibgp
 evpn_overlay_bgp_rtc: true
 bgp_as: 65000
-bgp_mesh_pes: true
+bgp_mesh_pes: false
 overlay_rt_type:
   admin_subfield: "bgp_as"
 overlay_rd_type:
@@ -125,10 +125,28 @@ rr:
                 }
                 EOF
       router_bgp:
+        peer_groups:
+          - name: MPLS-OVERLAY-PEERS-PARTIAL
+            remote_as: "65000"
+            update_source: Loopback0
+            route_reflector_client: true
+            send_community: all
+            maximum_routes: 0
+        neighbors:
+          - ip_address: "172.16.0.101"
+            peer_group: MPLS-OVERLAY-PEERS-PARTIAL
+            description: SGRL-A
         address_family_evpn:
-          neighbors:
-            - ip_address: "172.16.0.101"
+          peer_groups:
+            - name: MPLS-OVERLAY-PEERS-PARTIAL
+              activate: true
               rcf_out: "EXPORT_PARTIAL()"
+        address_family_rtc:
+          peer_groups:
+            - name: MPLS-OVERLAY-PEERS-PARTIAL
+              activate: true
+              default_route_target:
+                only: true
   nodes:
     - name: "CORP-R"
       id: 201
@@ -194,15 +212,6 @@ pe:
     - name: "CORP-A"
       id: 3
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
-      # Override VPWS port-channel ID to match SGRL-A's Port-Channel1.
-      # AVD derives channel_group from interface digits (Ethernet3/1 → 31),
-      # but EVPN A/A LACP requires matching OperKeys across PEs.
-      structured_config:
-        ethernet_interfaces:
-          - name: Ethernet3/1
-            channel_group:
-              id: 1
-              mode: active
     - name: "CORP-B"
       id: 4
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"

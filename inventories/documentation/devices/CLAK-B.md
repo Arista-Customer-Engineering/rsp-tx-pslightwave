@@ -512,7 +512,7 @@ interface defaults
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Ethernet3/1.100 | - | - | dot1q | - | 100 | - | - | client | - | - | - | - |
+| Ethernet3/1.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
 
 ##### IPv4
 
@@ -547,7 +547,7 @@ interface Ethernet3/1
 interface Ethernet3/1.100
    no shutdown
    encapsulation vlan
-      client dot1q 100 network client
+      client dot1q 100
 !
 interface Ethernet25/1
    description P2P_TSHL-B_Ethernet25/1
@@ -863,18 +863,6 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Maximum-accepted-routes | Maximum-advertised-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ----------------------- | ------------------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 172.16.0.1 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.2 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.3 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.4 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.5 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.6 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.7 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.8 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.9 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.10 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.11 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.101 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.201 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.202 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.203 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
@@ -919,30 +907,6 @@ router bgp 65000
    neighbor MPLS-OVERLAY-PEERS update-source Loopback0
    neighbor MPLS-OVERLAY-PEERS send-community
    neighbor MPLS-OVERLAY-PEERS maximum-routes 0
-   neighbor 172.16.0.1 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.1 description CYWE-A_Loopback0
-   neighbor 172.16.0.2 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.2 description CYWE-B_Loopback0
-   neighbor 172.16.0.3 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.3 description CORP-A_Loopback0
-   neighbor 172.16.0.4 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.4 description CORP-B_Loopback0
-   neighbor 172.16.0.5 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.5 description FIBT-A_Loopback0
-   neighbor 172.16.0.6 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.6 description FIBT-B_Loopback0
-   neighbor 172.16.0.7 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.7 description CYGA-A_Loopback0
-   neighbor 172.16.0.8 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.8 description CYGA-B_Loopback0
-   neighbor 172.16.0.9 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.9 description TSHL-A_Loopback0
-   neighbor 172.16.0.10 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.10 description TSHL-B_Loopback0
-   neighbor 172.16.0.11 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.11 description CLAK-A_Loopback0
-   neighbor 172.16.0.101 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.101 description SGRL-A_Loopback0
    neighbor 172.16.0.201 peer group MPLS-OVERLAY-PEERS
    neighbor 172.16.0.201 description CORP-R_Loopback0
    neighbor 172.16.0.202 peer group MPLS-OVERLAY-PEERS

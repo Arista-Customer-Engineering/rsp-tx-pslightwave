@@ -51,11 +51,13 @@ ethernet_interfaces:
     peer_type: l3_interface
   switchport:
     enabled: false
-- name: Ethernet1
+- name: Port-Channel1.100
   shutdown: false
-  channel_group:
-    id: 1
-    mode: active
+  encapsulation_vlan:
+    client:
+      encapsulation: dot1q
+      vlan: 100
+    network: null
   metadata:
     peer_type: point_to_point_service
 - name: Ethernet3.200
@@ -68,7 +70,23 @@ ethernet_interfaces:
       encapsulation: client
   metadata:
     peer_type: point_to_point_service
+- name: Ethernet1
+  description: VPWS_CUST-A
+  shutdown: false
+  channel_group:
+    id: 1
+    mode: active
+  metadata:
+    peer: CUST-A
+    peer_type: vpws
+    peer_key: endpoints_vpws
 - name: Ethernet3
+  shutdown: false
+  metadata:
+    peer_type: l3_interface
+  switchport:
+    enabled: false
+- name: Port-Channel1
   shutdown: false
   metadata:
     peer_type: l3_interface
@@ -274,24 +292,20 @@ port_channel_interfaces:
   switchport:
     enabled: false
 - name: Port-Channel1
+  description: VPWS_CUST-A
   shutdown: false
-  evpn_ethernet_segment:
-    identifier: 0000:0000:2222:0000:0001
-    route_target: '22:22:00:00:00:01'
-  lacp_id: 2222.0000.0001
-  metadata:
-    peer_type: system
   switchport:
     enabled: false
 - name: Port-Channel1.100
-  shutdown: false
   encapsulation_vlan:
     client:
       encapsulation: dot1q
       vlan: 100
     network: null
-  metadata:
-    peer_type: point_to_point_service
+  vlan_id: 100
+  evpn_ethernet_segment:
+    identifier: 0000:0000:2222:0000:0001
+    route_target: '22:22:00:00:00:01'
 prefix_lists:
 - name: DEFAULT_ONLY
   sequence_numbers:
@@ -372,66 +386,6 @@ router_bgp:
     metadata:
       peer: FIBT-R
     description: FIBT-R_Loopback0
-  - ip_address: 172.16.0.11
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CLAK-A
-    description: CLAK-A_Loopback0
-  - ip_address: 172.16.0.12
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CLAK-B
-    description: CLAK-B_Loopback0
-  - ip_address: 172.16.0.3
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CORP-A
-    description: CORP-A_Loopback0
-  - ip_address: 172.16.0.4
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CORP-B
-    description: CORP-B_Loopback0
-  - ip_address: 172.16.0.7
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYGA-A
-    description: CYGA-A_Loopback0
-  - ip_address: 172.16.0.8
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYGA-B
-    description: CYGA-B_Loopback0
-  - ip_address: 172.16.0.1
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYWE-A
-    description: CYWE-A_Loopback0
-  - ip_address: 172.16.0.2
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYWE-B
-    description: CYWE-B_Loopback0
-  - ip_address: 172.16.0.5
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: FIBT-A
-    description: FIBT-A_Loopback0
-  - ip_address: 172.16.0.6
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: FIBT-B
-    description: FIBT-B_Loopback0
-  - ip_address: 172.16.0.9
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: TSHL-A
-    description: TSHL-A_Loopback0
-  - ip_address: 172.16.0.10
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: TSHL-B
-    description: TSHL-B_Loopback0
   vpws:
   - name: VPWS_SERVICES
     rd: 172.16.0.101:28000

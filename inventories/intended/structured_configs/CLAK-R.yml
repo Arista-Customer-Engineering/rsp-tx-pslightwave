@@ -205,6 +205,12 @@ router_bgp:
     bfd: false
     send_community: all
     maximum_routes: 0
+  - name: MPLS-OVERLAY-PEERS-PARTIAL
+    remote_as: '65000'
+    update_source: Loopback0
+    route_reflector_client: true
+    send_community: all
+    maximum_routes: 0
   neighbors:
   - ip_address: 172.16.0.11
     peer_group: MPLS-OVERLAY-PEERS
@@ -257,10 +263,10 @@ router_bgp:
       peer: FIBT-B
     description: FIBT-B_Loopback0
   - ip_address: 172.16.0.101
-    peer_group: MPLS-OVERLAY-PEERS
+    peer_group: MPLS-OVERLAY-PEERS-PARTIAL
     metadata:
       peer: SGRL-A
-    description: SGRL-A_Loopback0
+    description: SGRL-A
   - ip_address: 172.16.0.9
     peer_group: MPLS-OVERLAY-PEERS
     metadata:
@@ -274,15 +280,19 @@ router_bgp:
   address_family_evpn:
     neighbor_default:
       encapsulation: mpls
-    neighbors:
-    - ip_address: 172.16.0.101
-      rcf_out: EXPORT_PARTIAL()
     peer_groups:
     - name: MPLS-OVERLAY-PEERS
       activate: true
+    - name: MPLS-OVERLAY-PEERS-PARTIAL
+      activate: true
+      rcf_out: EXPORT_PARTIAL()
   address_family_rtc:
     peer_groups:
     - name: MPLS-OVERLAY-PEERS
+      activate: true
+      default_route_target:
+        only: true
+    - name: MPLS-OVERLAY-PEERS-PARTIAL
       activate: true
       default_route_target:
         only: true

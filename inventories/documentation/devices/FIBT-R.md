@@ -767,6 +767,16 @@ ASN Notation: asplain
 | Send community | all |
 | Maximum routes | 0 (no limit) |
 
+##### MPLS-OVERLAY-PEERS-PARTIAL
+
+| Settings | Value |
+| -------- | ----- |
+| Remote AS | 65000 |
+| Route Reflector Client | Yes |
+| Source | Loopback0 |
+| Send community | all |
+| Maximum routes | 0 (no limit) |
+
 #### BGP Neighbors
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Maximum-accepted-routes | Maximum-advertised-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
@@ -783,7 +793,7 @@ ASN Notation: asplain
 | 172.16.0.10 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | Inherited from peer group MPLS-OVERLAY-PEERS | - | - |
 | 172.16.0.11 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | Inherited from peer group MPLS-OVERLAY-PEERS | - | - |
 | 172.16.0.12 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | Inherited from peer group MPLS-OVERLAY-PEERS | - | - |
-| 172.16.0.101 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | Inherited from peer group MPLS-OVERLAY-PEERS | - | - |
+| 172.16.0.101 | Inherited from peer group MPLS-OVERLAY-PEERS-PARTIAL | default | - | Inherited from peer group MPLS-OVERLAY-PEERS-PARTIAL | Inherited from peer group MPLS-OVERLAY-PEERS-PARTIAL | - | - | - | - | - | Inherited from peer group MPLS-OVERLAY-PEERS-PARTIAL | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -792,12 +802,7 @@ ASN Notation: asplain
 | Peer Group | Activate | Route-map In | Route-map Out | Peer-tag In | Peer-tag Out | Encapsulation | Next-hop-self Source Interface |
 | ---------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
 | MPLS-OVERLAY-PEERS | True | - | - | - | - | default | - |
-
-##### EVPN Neighbors
-
-| Neighbor | Activate | Route-map In | Route-map Out | Peer-tag In | Peer-tag Out | Encapsulation | Next-hop-self Source Interface |
-| -------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
-| 172.16.0.101 | False | - | - | - | - | default | - |
+| MPLS-OVERLAY-PEERS-PARTIAL | True | - | - | - | - | default | - |
 
 ##### EVPN Neighbor Default Encapsulation
 
@@ -820,6 +825,12 @@ router bgp 65000
    neighbor MPLS-OVERLAY-PEERS route-reflector-client
    neighbor MPLS-OVERLAY-PEERS send-community
    neighbor MPLS-OVERLAY-PEERS maximum-routes 0
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL peer group
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL remote-as 65000
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL update-source Loopback0
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL route-reflector-client
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL send-community
+   neighbor MPLS-OVERLAY-PEERS-PARTIAL maximum-routes 0
    neighbor 172.16.0.1 peer group MPLS-OVERLAY-PEERS
    neighbor 172.16.0.1 description CYWE-A_Loopback0
    neighbor 172.16.0.2 peer group MPLS-OVERLAY-PEERS
@@ -844,13 +855,14 @@ router bgp 65000
    neighbor 172.16.0.11 description CLAK-A_Loopback0
    neighbor 172.16.0.12 peer group MPLS-OVERLAY-PEERS
    neighbor 172.16.0.12 description CLAK-B_Loopback0
-   neighbor 172.16.0.101 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.101 description SGRL-A_Loopback0
+   neighbor 172.16.0.101 peer group MPLS-OVERLAY-PEERS-PARTIAL
+   neighbor 172.16.0.101 description SGRL-A
    !
    address-family evpn
       neighbor default encapsulation mpls
       neighbor MPLS-OVERLAY-PEERS activate
-      neighbor 172.16.0.101 rcf out EXPORT_PARTIAL()
+      neighbor MPLS-OVERLAY-PEERS-PARTIAL activate
+      neighbor MPLS-OVERLAY-PEERS-PARTIAL rcf out EXPORT_PARTIAL()
    !
    address-family ipv4
       no neighbor MPLS-OVERLAY-PEERS activate
@@ -858,6 +870,8 @@ router bgp 65000
    address-family rt-membership
       neighbor MPLS-OVERLAY-PEERS activate
       neighbor MPLS-OVERLAY-PEERS default-route-target only
+      neighbor MPLS-OVERLAY-PEERS-PARTIAL activate
+      neighbor MPLS-OVERLAY-PEERS-PARTIAL default-route-target only
 ```
 
 ## BFD

@@ -4,25 +4,23 @@ services_vpws:
     point_to_point_services:
       ######################################################################
       # CUST-A <-> CUST-Z: Multihomed A-side (ESI LAG), single-homed Z-side
+      # A-side Port-Channel1 is created by endpoints_vpws (connected_endpoints)
+      # with channel_id: 1 to ensure matching OperKeys across SGRL-A and CORP-A.
       ######################################################################
       - name: "CUST-A-TO-CUST-Z"
         type: "vpws-pseudowire"
         subinterfaces:
           - number: 100
-            port_channel:
-              structured_config:
-                encapsulation_vlan:
-                  client:
-                    encapsulation: "dot1q"
-                    vlan: 100
-                  network:
+            structured_config:
+              encapsulation_vlan:
+                client:
+                  encapsulation: "dot1q"
+                  vlan: 100
+                network:          
         endpoints:
           - id: 1
             nodes: ["SGRL-A", "CORP-A"]
-            interfaces: ["Ethernet1", "Ethernet3/1"]
-            port_channel:
-              mode: "active"
-              short_esi: "{{ esi_CUST_A_VPWS }}"
+            interfaces: ["Port-Channel1", "Port-Channel1"]
           - id: 2
             nodes: ["CLAK-B"]
             interfaces: ["Ethernet3/1"]

@@ -1,11 +1,22 @@
-# endpoints_vpws:
-#   - name: "VPWS_MNO-EVC1001"
-#     adapters:
-#       - switches: [ "BETA-PE-01" ]
-#         switch_ports: [ "Ethernet4"]
-#         endpoint_ports: [ "MNO-CSR"]
-#         sflow: true
-#       - switches: [ "THETA-PE-01" ]
-#         switch_ports: [ "Ethernet1"]
-#         endpoint_ports: [ "MNO-AGG"]
-#         sflow: true        
+########################################################
+# VPWS Customer Endpoint Attachments
+# Physical port-channel + ESI definitions.
+# The VPWS pseudowire binding is in services_vpws.yml.
+########################################################
+endpoints_vpws:
+  - name: "CUST-A"
+    adapters:
+      - switches: ["SGRL-A", "CORP-A"]
+        switch_ports: ["Ethernet1", "Ethernet3/1"]
+        port_channel:
+          mode: active
+          channel_id: 1
+          subinterfaces:
+            - number: 100
+              short_esi: "{{ esi_CUST_A_VPWS }}"
+              structured_config:
+                encapsulation_vlan:
+                  client:
+                    encapsulation: "dot1q"
+                    vlan: 100
+                  network:

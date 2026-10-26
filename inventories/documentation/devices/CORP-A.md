@@ -508,6 +508,12 @@ interface defaults
 
 *Inherited from Port-Channel Interface
 
+##### Flexible Encapsulation Interfaces
+
+| Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
+| --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
+| Port-Channel1.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
+
 ##### IPv4
 
 | Interface | Description | Channel Group | IP Address | VRF | MTU | Shutdown | ACL In | ACL Out |
@@ -542,6 +548,7 @@ interface Ethernet1/1
    channel-group 11 mode active
 !
 interface Ethernet3/1
+   description VPWS_CUST-A
    no shutdown
    channel-group 1 mode active
 !
@@ -574,6 +581,15 @@ interface Ethernet29/1
    isis network point-to-point
    isis authentication mode md5
    isis authentication key 7 <removed>
+!
+interface Port-Channel1
+   no shutdown
+   no switchport
+!
+interface Port-Channel1.100
+   no shutdown
+   encapsulation vlan
+      client dot1q 100
 ```
 
 ### Port-Channel Interfaces
@@ -589,7 +605,7 @@ interface Ethernet29/1
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Port-Channel31.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
+| Port-Channel1.100 | - | 100 | dot1q | - | 100 | - | - | - | - | - | - | - |
 
 ##### EVPN Multihoming
 
@@ -597,7 +613,7 @@ interface Ethernet29/1
 
 | Interface | Ethernet Segment Identifier | Multihoming Redundancy Mode | Route Target |
 | --------- | --------------------------- | --------------------------- | ------------ |
-| Port-Channel31 | 0000:0000:2222:0000:0001 | all-active | 22:22:00:00:00:01 |
+| Port-Channel1.100 | 0000:0000:2222:0000:0001 | all-active | 22:22:00:00:00:01 |
 
 ##### IPv4
 
@@ -619,6 +635,21 @@ interface Ethernet29/1
 
 ```eos
 !
+interface Port-Channel1
+   description VPWS_CUST-A
+   no shutdown
+   no switchport
+!
+interface Port-Channel1.100
+   vlan id 100
+   !
+   encapsulation vlan
+      client dot1q 100
+   !
+   evpn ethernet-segment
+      identifier 0000:0000:2222:0000:0001
+      route-target import 22:22:00:00:00:01
+!
 interface Port-Channel11
    description P2P_SGRL-A_Port-Channel281
    no shutdown
@@ -633,21 +664,6 @@ interface Port-Channel11
    isis network point-to-point
    isis authentication mode md5
    isis authentication key 7 <removed>
-!
-interface Port-Channel31
-   no shutdown
-   no switchport
-   !
-   evpn ethernet-segment
-      identifier 0000:0000:2222:0000:0001
-      route-target import 22:22:00:00:00:01
-   lacp system-id 2222.0000.0001
-!
-interface Port-Channel31.100
-   no shutdown
-   !
-   encapsulation vlan
-      client dot1q 100
 !
 interface Port-Channel251
    description P2P_CYWE-A_Port-Channel251
@@ -905,18 +921,6 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Maximum-accepted-routes | Maximum-advertised-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ----------------------- | ------------------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 172.16.0.1 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.2 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.4 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.5 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.6 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.7 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.8 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.9 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.10 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.11 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.12 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 172.16.0.101 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.201 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.202 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.203 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
@@ -961,30 +965,6 @@ router bgp 65000
    neighbor MPLS-OVERLAY-PEERS update-source Loopback0
    neighbor MPLS-OVERLAY-PEERS send-community
    neighbor MPLS-OVERLAY-PEERS maximum-routes 0
-   neighbor 172.16.0.1 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.1 description CYWE-A_Loopback0
-   neighbor 172.16.0.2 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.2 description CYWE-B_Loopback0
-   neighbor 172.16.0.4 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.4 description CORP-B_Loopback0
-   neighbor 172.16.0.5 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.5 description FIBT-A_Loopback0
-   neighbor 172.16.0.6 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.6 description FIBT-B_Loopback0
-   neighbor 172.16.0.7 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.7 description CYGA-A_Loopback0
-   neighbor 172.16.0.8 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.8 description CYGA-B_Loopback0
-   neighbor 172.16.0.9 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.9 description TSHL-A_Loopback0
-   neighbor 172.16.0.10 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.10 description TSHL-B_Loopback0
-   neighbor 172.16.0.11 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.11 description CLAK-A_Loopback0
-   neighbor 172.16.0.12 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.12 description CLAK-B_Loopback0
-   neighbor 172.16.0.101 peer group MPLS-OVERLAY-PEERS
-   neighbor 172.16.0.101 description SGRL-A_Loopback0
    neighbor 172.16.0.201 peer group MPLS-OVERLAY-PEERS
    neighbor 172.16.0.201 description CORP-R_Loopback0
    neighbor 172.16.0.202 peer group MPLS-OVERLAY-PEERS
@@ -1078,7 +1058,7 @@ mpls ip
 
 | Patch Name | Enabled | Connector A Type | Connector A Endpoint | Connector B Type | Connector B Endpoint |
 | ---------- | ------- | ---------------- | -------------------- | ---------------- | -------------------- |
-| CUST-A-TO-CUST-Z_100 | True | Interface | Port-Channel31.100 | Pseudowire | bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100 |
+| CUST-A-TO-CUST-Z_100 | True | Interface | Port-Channel1.100 | Pseudowire | bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100 |
 
 ### Patch Panel Device Configuration
 
@@ -1086,7 +1066,7 @@ mpls ip
 !
 patch panel
    patch CUST-A-TO-CUST-Z_100
-      connector 1 interface Port-Channel31.100
+      connector 1 interface Port-Channel1.100
       !
       connector 2 pseudowire bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100
    !

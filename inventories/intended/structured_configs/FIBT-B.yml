@@ -348,66 +348,6 @@ router_bgp:
     metadata:
       peer: FIBT-R
     description: FIBT-R_Loopback0
-  - ip_address: 172.16.0.11
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CLAK-A
-    description: CLAK-A_Loopback0
-  - ip_address: 172.16.0.12
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CLAK-B
-    description: CLAK-B_Loopback0
-  - ip_address: 172.16.0.3
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CORP-A
-    description: CORP-A_Loopback0
-  - ip_address: 172.16.0.4
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CORP-B
-    description: CORP-B_Loopback0
-  - ip_address: 172.16.0.7
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYGA-A
-    description: CYGA-A_Loopback0
-  - ip_address: 172.16.0.8
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYGA-B
-    description: CYGA-B_Loopback0
-  - ip_address: 172.16.0.1
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYWE-A
-    description: CYWE-A_Loopback0
-  - ip_address: 172.16.0.2
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: CYWE-B
-    description: CYWE-B_Loopback0
-  - ip_address: 172.16.0.5
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: FIBT-A
-    description: FIBT-A_Loopback0
-  - ip_address: 172.16.0.101
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: SGRL-A
-    description: SGRL-A_Loopback0
-  - ip_address: 172.16.0.9
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: TSHL-A
-    description: TSHL-A_Loopback0
-  - ip_address: 172.16.0.10
-    peer_group: MPLS-OVERLAY-PEERS
-    metadata:
-      peer: TSHL-B
-    description: TSHL-B_Loopback0
   address_family_evpn:
     neighbor_default:
       encapsulation: mpls
