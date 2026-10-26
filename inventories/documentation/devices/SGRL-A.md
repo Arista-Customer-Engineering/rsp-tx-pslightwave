@@ -510,7 +510,7 @@ interface defaults
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Ethernet3.200 | - | - | dot1q | - | 200 | - | - | - | - | - | - | - |
+| Ethernet3.200 | - | - | dot1q | - | 200 | - | - | client | - | - | - | - |
 
 ##### IPv4
 
@@ -553,7 +553,7 @@ interface Ethernet3
 interface Ethernet3.200
    no shutdown
    encapsulation vlan
-      client dot1q 200
+      client dot1q 200 network client
 !
 interface Ethernet27/1
    description P2P_CYWE-A_Ethernet1/1
@@ -579,7 +579,7 @@ interface Ethernet28/1
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Port-Channel1.100 | - | - | dot1q | - | 100 | - | - | client | - | - | - | - |
+| Port-Channel1.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
 
 ##### EVPN Multihoming
 
@@ -620,7 +620,7 @@ interface Port-Channel1.100
    no shutdown
    !
    encapsulation vlan
-      client dot1q 100 network client
+      client dot1q 100
 !
 interface Port-Channel271
    description P2P_CYWE-A_Port-Channel11

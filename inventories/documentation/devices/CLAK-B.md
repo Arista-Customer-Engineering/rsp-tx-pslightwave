@@ -510,7 +510,7 @@ interface defaults
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Ethernet3/1.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
+| Ethernet3/1.100 | - | - | dot1q | - | 100 | - | - | client | - | - | - | - |
 
 ##### IPv4
 
@@ -545,7 +545,7 @@ interface Ethernet3/1
 interface Ethernet3/1.100
    no shutdown
    encapsulation vlan
-      client dot1q 100
+      client dot1q 100 network client
 !
 interface Ethernet25/1
    description P2P_TSHL-B_Ethernet25/1

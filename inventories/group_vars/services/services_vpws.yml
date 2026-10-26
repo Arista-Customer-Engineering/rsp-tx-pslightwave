@@ -9,12 +9,13 @@ services_vpws:
         type: "vpws-pseudowire"
         subinterfaces:
           - number: 100
-            structured_config:
-              encapsulation_vlan:
-                client:
-                  encapsulation: "dot1q"
-                  vlan: 100
-                network:
+            port_channel:
+              structured_config:
+                encapsulation_vlan:
+                  client:
+                    encapsulation: "dot1q"
+                    vlan: 100
+                  network:
         endpoints:
           - id: 1
             nodes: ["SGRL-A", "CORP-A"]
@@ -25,6 +26,7 @@ services_vpws:
           - id: 2
             nodes: ["CLAK-B"]
             interfaces: ["Ethernet3/1"]
+        lldp_disable: true
       ######################################################################
       # CUST-C DIA VPWS: SGRL-A -> CYWE-A (full-table PE via patch panel)
       ######################################################################
@@ -32,12 +34,13 @@ services_vpws:
         type: "vpws-pseudowire"
         subinterfaces:
           - number: 200
-            structured_config:
-              encapsulation_vlan:
-                client:
-                  encapsulation: "dot1q"
-                  vlan: 200
-                network:
+            port_channel:
+              structured_config:
+                encapsulation_vlan:
+                  client:
+                    encapsulation: "dot1q"
+                    vlan: 200
+                  network:
         endpoints:
           - id: 1
             nodes: ["SGRL-A"]

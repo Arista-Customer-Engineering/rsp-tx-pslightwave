@@ -587,7 +587,7 @@ interface Ethernet29/1
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Port-Channel31.100 | - | - | dot1q | - | 100 | - | - | client | - | - | - | - |
+| Port-Channel31.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
 
 ##### EVPN Multihoming
 
@@ -645,7 +645,7 @@ interface Port-Channel31.100
    no shutdown
    !
    encapsulation vlan
-      client dot1q 100 network client
+      client dot1q 100
 !
 interface Port-Channel251
    description P2P_CYWE-A_Port-Channel251

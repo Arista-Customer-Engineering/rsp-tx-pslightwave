@@ -517,7 +517,7 @@ interface defaults
 
 | Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
 | --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Ethernet4/1.200 | - | - | dot1q | - | 200 | - | - | - | - | - | - | - |
+| Ethernet4/1.200 | - | - | dot1q | - | 200 | - | - | client | - | - | - | - |
 
 ##### IPv4
 
@@ -575,7 +575,7 @@ interface Ethernet4/1
 interface Ethernet4/1.200
    no shutdown
    encapsulation vlan
-      client dot1q 200
+      client dot1q 200 network client
 !
 interface Ethernet5/1
    no shutdown

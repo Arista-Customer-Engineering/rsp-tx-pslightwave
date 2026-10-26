@@ -96,7 +96,8 @@ ethernet_interfaces:
     client:
       encapsulation: dot1q
       vlan: 200
-    network: null
+    network:
+      encapsulation: client
   metadata:
     peer_type: point_to_point_service
 - name: Ethernet4/1

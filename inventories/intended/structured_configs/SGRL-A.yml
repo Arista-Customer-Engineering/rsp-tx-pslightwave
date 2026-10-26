@@ -64,7 +64,8 @@ ethernet_interfaces:
     client:
       encapsulation: dot1q
       vlan: 200
-    network: null
+    network:
+      encapsulation: client
   metadata:
     peer_type: point_to_point_service
 - name: Ethernet3
@@ -272,8 +273,7 @@ port_channel_interfaces:
     client:
       encapsulation: dot1q
       vlan: 100
-    network:
-      encapsulation: client
+    network: null
   metadata:
     peer_type: point_to_point_service
 prefix_lists:
