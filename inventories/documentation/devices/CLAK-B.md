@@ -39,6 +39,7 @@
   - [IP Routing](#ip-routing)
   - [IPv6 Routing](#ipv6-routing)
   - [Static Routes](#static-routes)
+  - [Router General](#router-general)
   - [Router ISIS](#router-isis)
   - [Router BGP](#router-bgp)
 - [BFD](#bfd)
@@ -53,6 +54,7 @@
 - [Multicast](#multicast)
   - [IP IGMP Snooping](#ip-igmp-snooping)
 - [Filters](#filters)
+  - [IP Community-lists](#ip-community-lists)
   - [Prefix-lists](#prefix-lists)
   - [Route-maps](#route-maps)
 - [VRF Instances](#vrf-instances)
@@ -749,6 +751,28 @@ no ip routing vrf OOB
 ip route vrf OOB 0.0.0.0/0 192.168.128.254
 ```
 
+### Router General
+
+#### Router General Device Configuration
+
+```eos
+!
+router general
+   control-functions
+      code unit VRF_REDISTRIBUTION
+         function REDISTRIBUTE_INTERNET() {
+             if (source_protocol is CONNECTED or source_protocol is STATIC) {
+                 community add community_list PROVIDER;
+             }
+             return true;
+         }
+         EOF
+
+   !
+   exit
+   exit
+```
+
 ### Router ISIS
 
 #### Router ISIS Summary
@@ -880,6 +904,7 @@ ASN Notation: asplain
 | VRF | Route-Distinguisher | Redistribute | Graceful Restart |
 | --- | ------------------- | ------------ | ---------------- |
 | INBAND_MGMT | 172.16.0.12:0 | connected<br>static | - |
+| INTERNET | - | connected<br>static | - |
 
 #### Router BGP Device Configuration
 
@@ -949,6 +974,10 @@ router bgp 65000
       router-id 172.16.0.12
       redistribute connected
       redistribute static
+   !
+   vrf INTERNET
+      redistribute connected rcf REDISTRIBUTE_INTERNET()
+      redistribute static rcf REDISTRIBUTE_INTERNET()
 ```
 
 ## BFD
@@ -1036,6 +1065,24 @@ patch panel
 ```
 
 ## Filters
+
+### IP Community-lists
+
+#### IP Community-lists Summary
+
+| Name | Action | Communities / Regexp |
+| ---- | ------ | -------------------- |
+| PROVIDER | permit | 65000:64496 |
+| CUSTOMERS | permit | 65000:4000 |
+| CACHES | permit | 65000:2000 |
+
+#### IP Community-lists Device Configuration
+
+```eos
+ip community-list CACHES permit 65000:2000
+ip community-list CUSTOMERS permit 65000:4000
+ip community-list PROVIDER permit 65000:64496
+```
 
 ### Prefix-lists
 

@@ -57,6 +57,22 @@ event_monitor:
 hostname: TSHL-B
 interface_defaults:
   mtu: 8000
+ip_community_lists:
+- name: PROVIDER
+  entries:
+  - action: permit
+    communities:
+    - 65000:64496
+- name: CUSTOMERS
+  entries:
+  - action: permit
+    communities:
+    - 65000:4000
+- name: CACHES
+  entries:
+  - action: permit
+    communities:
+    - 65000:2000
 ip_dhcp_relay:
   information_option: true
 ip_icmp_redirect: false
@@ -368,6 +384,20 @@ router_bgp:
         enabled: true
       static:
         enabled: true
+  - name: INTERNET
+    redistribute:
+      connected:
+        enabled: true
+        rcf: REDISTRIBUTE_INTERNET()
+      static:
+        enabled: true
+        rcf: REDISTRIBUTE_INTERNET()
+router_general:
+  control_functions:
+    code_units:
+    - name: VRF_REDISTRIBUTION
+      content: "function REDISTRIBUTE_INTERNET() {\n    if (source_protocol is CONNECTED or source_protocol is STATIC) {\n        community
+        add community_list PROVIDER;\n    }\n    return true;\n}\nEOF\n"
 router_isis:
   instance: CORE
   net: 49.0001.1720.1600.0010.00

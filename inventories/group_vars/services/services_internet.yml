@@ -20,8 +20,13 @@ services_internet: # Network services key
           loopback_ip_range: "80.100.0.0/24"
           loopback_ipv6_range: "2001:db8:8000:30::/64"
           hardware_forwarding: true
-        ############### SUMMARY ROUTE PINNING #################
+        ############### DEFAULT ROUTE ORIGINATION ###############
         static_routes:
+          - prefix: "0.0.0.0/0"
+            interface: "null0"
+            nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]
+            distance: 250
+          ############### SUMMARY ROUTE PINNING #################
           - prefix: "80.0.0.0/16"
             interface: "null0"
             nodes: ["CYWE-A", "CYWE-B", "FIBT-B", "TSHL-A", "CYGA-A"]

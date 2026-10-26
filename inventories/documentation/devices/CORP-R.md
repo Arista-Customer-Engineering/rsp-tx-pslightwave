@@ -37,6 +37,7 @@
   - [IP Routing](#ip-routing)
   - [IPv6 Routing](#ipv6-routing)
   - [Static Routes](#static-routes)
+  - [Router General](#router-general)
   - [Router ISIS](#router-isis)
   - [Router BGP](#router-bgp)
 - [BFD](#bfd)
@@ -45,6 +46,8 @@
   - [MPLS and LDP](#mpls-and-ldp)
   - [MPLS Interfaces](#mpls-interfaces)
   - [MPLS Device Configuration](#mpls-device-configuration)
+- [Filters](#filters)
+  - [IP Community-lists](#ip-community-lists)
 - [VRF Instances](#vrf-instances)
   - [VRF Instances Summary](#vrf-instances-summary)
   - [VRF Instances Device Configuration](#vrf-instances-device-configuration)
@@ -639,6 +642,39 @@ no ip routing vrf OOB
 ip route vrf OOB 0.0.0.0/0 192.168.128.254
 ```
 
+### Router General
+
+#### Router General Device Configuration
+
+```eos
+!
+router general
+   control-functions
+      code unit EVPN_EXPORT_FILTERS
+         function EXPORT_PARTIAL() {
+             if (ext_community has_any {ROUTE-TARGET-AS:65000:30000}) {
+                 if (evpn.ip_prefix_route.prefix is 0.0.0.0/0 or evpn.ip_prefix_route.prefix is ::/0) {
+                     return true;
+                 }
+                 if (community match community_list PROVIDER) or
+                    (community match community_list CUSTOMERS) or
+                    (community match community_list CACHES) {
+                     return true;
+                 }
+                 if (evpn.route_type is_not EVPN_IP_PREFIX) {
+                     return true;
+                 }
+                 return false;
+             }
+             return true;
+         }
+         EOF
+
+   !
+   exit
+   exit
+```
+
 ### Router ISIS
 
 #### Router ISIS Summary
@@ -757,6 +793,12 @@ ASN Notation: asplain
 | ---------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
 | MPLS-OVERLAY-PEERS | True | - | - | - | - | default | - |
 
+##### EVPN Neighbors
+
+| Neighbor | Activate | Route-map In | Route-map Out | Peer-tag In | Peer-tag Out | Encapsulation | Next-hop-self Source Interface |
+| -------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
+| 172.16.0.101 | False | - | - | - | - | default | - |
+
 ##### EVPN Neighbor Default Encapsulation
 
 | Neighbor Default Encapsulation | Next-hop-self Source Interface |
@@ -808,6 +850,7 @@ router bgp 65000
    address-family evpn
       neighbor default encapsulation mpls
       neighbor MPLS-OVERLAY-PEERS activate
+      neighbor 172.16.0.101 rcf out EXPORT_PARTIAL()
    !
    address-family ipv4
       no neighbor MPLS-OVERLAY-PEERS activate
@@ -861,6 +904,26 @@ router bfd
 ```eos
 !
 mpls ip
+```
+
+## Filters
+
+### IP Community-lists
+
+#### IP Community-lists Summary
+
+| Name | Action | Communities / Regexp |
+| ---- | ------ | -------------------- |
+| PROVIDER | permit | 65000:64496 |
+| CUSTOMERS | permit | 65000:4000 |
+| CACHES | permit | 65000:2000 |
+
+#### IP Community-lists Device Configuration
+
+```eos
+ip community-list CACHES permit 65000:2000
+ip community-list CUSTOMERS permit 65000:4000
+ip community-list PROVIDER permit 65000:64496
 ```
 
 ## VRF Instances

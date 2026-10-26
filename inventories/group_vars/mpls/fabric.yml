@@ -82,12 +82,53 @@ rr:
     isis_system_id_prefix: '0000.0000'
     loopback_ipv4_pool: 172.16.0.0/24
     platform: "7280SR3"
-    #mpls_route_reflectors: ["ALPHA-EDGE-01", "BETA-EDGE-01"]
     raw_eos_cli: |
       platform tfa
         interface mode relaying
     filter:
       only_vlans_in_use: true
+    structured_config:
+      ip_community_lists:
+        - name: PROVIDER
+          entries:
+            - action: permit
+              communities: ["65000:64496"]
+        - name: CUSTOMERS
+          entries:
+            - action: permit
+              communities: ["65000:4000"]
+        - name: CACHES
+          entries:
+            - action: permit
+              communities: ["65000:2000"]
+      router_general:
+        control_functions:
+          code_units:
+            - name: EVPN_EXPORT_FILTERS
+              content: |
+                function EXPORT_PARTIAL() {
+                    if (ext_community has_any {ROUTE-TARGET-AS:65000:30000}) {
+                        if (evpn.ip_prefix_route.prefix is 0.0.0.0/0 or evpn.ip_prefix_route.prefix is ::/0) {
+                            return true;
+                        }
+                        if (community match community_list PROVIDER) or
+                           (community match community_list CUSTOMERS) or
+                           (community match community_list CACHES) {
+                            return true;
+                        }
+                        if (evpn.route_type is_not EVPN_IP_PREFIX) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    return true;
+                }
+                EOF
+      router_bgp:
+        address_family_evpn:
+          neighbors:
+            - ip_address: "172.16.0.101"
+              rcf_out: "EXPORT_PARTIAL()"
   nodes:
     - name: "CORP-R"
       id: 201
@@ -109,13 +150,35 @@ pe:
     loopback_ipv4_pool: 172.16.0.0/24
     platform: "7280SR3"
     mpls_route_reflectors: ["CORP-R", "FIBT-R", "CLAK-R"]
-    # Revisit to simulate sFlow on vEOS / cEOS Labs
     raw_eos_cli: |
       platform tfa
         interface mode relaying
     filter:
       always_include_vrfs_in_tenants: ["Inband Management"]
       only_vlans_in_use: true
+    structured_config:
+      router_general:
+        control_functions:
+          code_units:
+            - name: VRF_REDISTRIBUTION
+              content: |
+                function REDISTRIBUTE_INTERNET() {
+                    if (source_protocol is CONNECTED or source_protocol is STATIC) {
+                        community add community_list PROVIDER;
+                    }
+                    return true;
+                }
+                EOF
+      router_bgp:
+        vrfs:
+          - name: INTERNET
+            redistribute:
+              static:
+                enabled: true
+                rcf: "REDISTRIBUTE_INTERNET()"
+              connected:
+                enabled: true
+                rcf: "REDISTRIBUTE_INTERNET()"
   node_groups:
   - group: "Core Routers"
     mpls_overlay_role: "client"
@@ -131,6 +194,15 @@ pe:
     - name: "CORP-A"
       id: 3
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"
+      # Override VPWS port-channel ID to match SGRL-A's Port-Channel1.
+      # AVD derives channel_group from interface digits (Ethernet3/1 → 31),
+      # but EVPN A/A LACP requires matching OperKeys across PEs.
+      structured_config:
+        ethernet_interfaces:
+          - name: Ethernet3/1
+            channel_group:
+              id: 1
+              mode: active
     - name: "CORP-B"
       id: 4
       mgmt_ip: "{{ ansible_host }}/{{ lab_settings.mgmt_cidr }}"

@@ -40,6 +40,7 @@
   - [IPv6 Routing](#ipv6-routing)
   - [Static Routes](#static-routes)
   - [IPv6 Static Routes](#ipv6-static-routes)
+  - [Router General](#router-general)
   - [Router ISIS](#router-isis)
   - [Router BGP](#router-bgp)
 - [BFD](#bfd)
@@ -51,6 +52,7 @@
 - [Multicast](#multicast)
   - [IP IGMP Snooping](#ip-igmp-snooping)
 - [Filters](#filters)
+  - [IP Community-lists](#ip-community-lists)
   - [Prefix-lists](#prefix-lists)
   - [Route-maps](#route-maps)
 - [VRF Instances](#vrf-instances)
@@ -774,6 +776,7 @@ ipv6 unicast-routing vrf INTERNET
 
 | VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
 | --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
+| INTERNET | 0.0.0.0/0 | - | null0 | 250 | - | - | - |
 | INTERNET | 80.0.0.0/16 | - | null0 | 255 | - | - | - |
 | INTERNET | 80.52.0.0/24 | - | null0 | 254 | - | - | - |
 | INTERNET | 81.0.0.0/16 | - | null0 | 255 | - | - | - |
@@ -784,6 +787,7 @@ ipv6 unicast-routing vrf INTERNET
 
 ```eos
 !
+ip route vrf INTERNET 0.0.0.0/0 Null0 250
 ip route vrf INTERNET 80.0.0.0/16 Null0 255
 ip route vrf INTERNET 80.52.0.0/24 Null0 254
 ip route vrf INTERNET 81.0.0.0/16 Null0 255
@@ -806,6 +810,28 @@ ip route vrf OOB 0.0.0.0/0 192.168.128.254
 !
 ipv6 route vrf INTERNET 0::0/0 Null0 255
 ipv6 route vrf INTERNET 2001:db8:8000::/33 Null0 255
+```
+
+### Router General
+
+#### Router General Device Configuration
+
+```eos
+!
+router general
+   control-functions
+      code unit VRF_REDISTRIBUTION
+         function REDISTRIBUTE_INTERNET() {
+             if (source_protocol is CONNECTED or source_protocol is STATIC) {
+                 community add community_list PROVIDER;
+             }
+             return true;
+         }
+         EOF
+
+   !
+   exit
+   exit
 ```
 
 ### Router ISIS
@@ -1029,8 +1055,8 @@ router bgp 65000
       neighbor 2605::0 peer group PROVIDER
       neighbor 2605::0 remote-as 3257
       neighbor 2605::0 description AS3257 GTT
-      redistribute connected
-      redistribute static
+      redistribute connected rcf REDISTRIBUTE_INTERNET()
+      redistribute static rcf REDISTRIBUTE_INTERNET()
       !
       address-family ipv4
          neighbor 198.51.100.8 activate
@@ -1103,6 +1129,24 @@ mpls ip
 ```
 
 ## Filters
+
+### IP Community-lists
+
+#### IP Community-lists Summary
+
+| Name | Action | Communities / Regexp |
+| ---- | ------ | -------------------- |
+| PROVIDER | permit | 65000:64496 |
+| CUSTOMERS | permit | 65000:4000 |
+| CACHES | permit | 65000:2000 |
+
+#### IP Community-lists Device Configuration
+
+```eos
+ip community-list CACHES permit 65000:2000
+ip community-list CUSTOMERS permit 65000:4000
+ip community-list PROVIDER permit 65000:64496
+```
 
 ### Prefix-lists
 

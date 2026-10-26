@@ -39,6 +39,7 @@
   - [IP Routing](#ip-routing)
   - [IPv6 Routing](#ipv6-routing)
   - [Static Routes](#static-routes)
+  - [Router General](#router-general)
   - [Router ISIS](#router-isis)
   - [Router BGP](#router-bgp)
 - [BFD](#bfd)
@@ -53,6 +54,7 @@
 - [Multicast](#multicast)
   - [IP IGMP Snooping](#ip-igmp-snooping)
 - [Filters](#filters)
+  - [IP Community-lists](#ip-community-lists)
   - [Prefix-lists](#prefix-lists)
   - [Route-maps](#route-maps)
 - [VRF Instances](#vrf-instances)
@@ -789,6 +791,28 @@ ip route vrf INTERNET 198.51.100.30/32 198.51.100.20
 ip route vrf OOB 0.0.0.0/0 192.168.128.254
 ```
 
+### Router General
+
+#### Router General Device Configuration
+
+```eos
+!
+router general
+   control-functions
+      code unit VRF_REDISTRIBUTION
+         function REDISTRIBUTE_INTERNET() {
+             if (source_protocol is CONNECTED or source_protocol is STATIC) {
+                 community add community_list PROVIDER;
+             }
+             return true;
+         }
+         EOF
+
+   !
+   exit
+   exit
+```
+
 ### Router ISIS
 
 #### Router ISIS Summary
@@ -1016,8 +1040,8 @@ router bgp 65000
       neighbor 198.51.100.30 description DIA: CUST-B (multi-hop eBGP)
       neighbor 198.51.100.30 ebgp-multihop 2
       neighbor 198.51.100.30 route-map RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT out
-      redistribute connected
-      redistribute static
+      redistribute connected rcf REDISTRIBUTE_INTERNET()
+      redistribute static rcf REDISTRIBUTE_INTERNET()
       !
       address-family ipv4
          neighbor 198.51.100.30 activate
@@ -1113,6 +1137,24 @@ patch panel
 ```
 
 ## Filters
+
+### IP Community-lists
+
+#### IP Community-lists Summary
+
+| Name | Action | Communities / Regexp |
+| ---- | ------ | -------------------- |
+| PROVIDER | permit | 65000:64496 |
+| CUSTOMERS | permit | 65000:4000 |
+| CACHES | permit | 65000:2000 |
+
+#### IP Community-lists Device Configuration
+
+```eos
+ip community-list CACHES permit 65000:2000
+ip community-list CUSTOMERS permit 65000:4000
+ip community-list PROVIDER permit 65000:64496
+```
 
 ### Prefix-lists
 

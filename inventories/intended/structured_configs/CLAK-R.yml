@@ -73,6 +73,22 @@ event_monitor:
 hostname: CLAK-R
 interface_defaults:
   mtu: 8000
+ip_community_lists:
+- name: PROVIDER
+  entries:
+  - action: permit
+    communities:
+    - 65000:64496
+- name: CUSTOMERS
+  entries:
+  - action: permit
+    communities:
+    - 65000:4000
+- name: CACHES
+  entries:
+  - action: permit
+    communities:
+    - 65000:2000
 ip_dhcp_relay:
   information_option: true
 ip_icmp_redirect: false
@@ -258,6 +274,9 @@ router_bgp:
   address_family_evpn:
     neighbor_default:
       encapsulation: mpls
+    neighbors:
+    - ip_address: 172.16.0.101
+      rcf_out: EXPORT_PARTIAL()
     peer_groups:
     - name: MPLS-OVERLAY-PEERS
       activate: true
@@ -271,6 +290,15 @@ router_bgp:
     peer_groups:
     - name: MPLS-OVERLAY-PEERS
       activate: false
+router_general:
+  control_functions:
+    code_units:
+    - name: EVPN_EXPORT_FILTERS
+      content: "function EXPORT_PARTIAL() {\n    if (ext_community has_any {ROUTE-TARGET-AS:65000:30000}) {\n        if (evpn.ip_prefix_route.prefix
+        is 0.0.0.0/0 or evpn.ip_prefix_route.prefix is ::/0) {\n            return true;\n        }\n        if (community match community_list
+        PROVIDER) or\n           (community match community_list CUSTOMERS) or\n           (community match community_list CACHES) {\n
+        \           return true;\n        }\n        if (evpn.route_type is_not EVPN_IP_PREFIX) {\n            return true;\n        }\n
+        \       return false;\n    }\n    return true;\n}\nEOF\n"
 router_isis:
   instance: CORE
   net: 49.0001.1720.1600.0203.00

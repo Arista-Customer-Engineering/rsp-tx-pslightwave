@@ -15,6 +15,20 @@ custom_structured_configuration_prefix_lists:
       - sequence: 30
         action: "permit 82.0.0.0/16 le 24"
 
+custom_structured_configuration_ip_community_lists:
+  - name: PROVIDER
+    entries:
+      - action: permit
+        communities: ["65000:64496"]
+  - name: CUSTOMERS
+    entries:
+      - action: permit
+        communities: ["65000:4000"]
+  - name: CACHES
+    entries:
+      - action: permit
+        communities: ["65000:2000"]
+
 custom_structured_configuration_route_maps:
   - name: "DEFAULT_ONLY"
     sequence_numbers:
