@@ -1,22 +1,16 @@
 ########################################################
 # VPWS Customer Endpoint Attachments
-# Physical port-channel + ESI definitions.
-# The VPWS pseudowire binding is in services_vpws.yml.
+# Physical port-channel definitions only (channel_id, LACP).
+# Subinterfaces, encapsulation, and pseudowire binding are
+# handled by services_vpws.yml.
 ########################################################
 endpoints_vpws:
   - name: "CUST-A"
     adapters:
       - switches: ["SGRL-A", "CORP-A"]
         switch_ports: ["Ethernet1", "Ethernet3/1"]
+        ethernet_segment:
+          short_esi: "{{ esi_CUST_A_VPWS }}"
         port_channel:
           mode: active
           channel_id: 1
-          subinterfaces:
-            - number: 100
-              short_esi: "{{ esi_CUST_A_VPWS }}"
-              structured_config:
-                encapsulation_vlan:
-                  client:
-                    encapsulation: "dot1q"
-                    vlan: 100
-                  network:

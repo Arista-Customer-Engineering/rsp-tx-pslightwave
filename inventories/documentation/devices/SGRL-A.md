@@ -505,6 +505,7 @@ interface defaults
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
+| Ethernet1 | VPWS_CUST-A | *- | *- | *- | *- | 1 |
 
 *Inherited from Port-Channel Interface
 
@@ -587,12 +588,7 @@ interface Port-Channel1.100
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
-
-##### Flexible Encapsulation Interfaces
-
-| Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
-| --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
-| Port-Channel1.100 | - | 100 | dot1q | - | 100 | - | - | - | - | - | - | - |
+| Port-Channel1 | VPWS_CUST-A | - | - | - | - | - | - | - | 0000:0000:2222:0000:0001 |
 
 ##### EVPN Multihoming
 
@@ -600,7 +596,7 @@ interface Port-Channel1.100
 
 | Interface | Ethernet Segment Identifier | Multihoming Redundancy Mode | Route Target |
 | --------- | --------------------------- | --------------------------- | ------------ |
-| Port-Channel1.100 | 0000:0000:2222:0000:0001 | all-active | 22:22:00:00:00:01 |
+| Port-Channel1 | 0000:0000:2222:0000:0001 | all-active | 22:22:00:00:00:01 |
 
 ##### IPv4
 
@@ -623,17 +619,12 @@ interface Port-Channel1.100
 interface Port-Channel1
    description VPWS_CUST-A
    no shutdown
-   no switchport
-!
-interface Port-Channel1.100
-   vlan id 100
-   !
-   encapsulation vlan
-      client dot1q 100
+   switchport
    !
    evpn ethernet-segment
       identifier 0000:0000:2222:0000:0001
       route-target import 22:22:00:00:00:01
+   lacp system-id 2222.0000.0001
 !
 interface Port-Channel271
    description P2P_CYWE-A_Port-Channel11

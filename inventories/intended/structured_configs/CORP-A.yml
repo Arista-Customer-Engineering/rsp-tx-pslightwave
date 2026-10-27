@@ -318,18 +318,12 @@ port_channel_interfaces:
 - name: Port-Channel1
   description: VPWS_CUST-A
   shutdown: false
-  switchport:
-    enabled: false
-- name: Port-Channel1.100
-  encapsulation_vlan:
-    client:
-      encapsulation: dot1q
-      vlan: 100
-    network: null
-  vlan_id: 100
   evpn_ethernet_segment:
     identifier: 0000:0000:2222:0000:0001
     route_target: '22:22:00:00:00:01'
+  lacp_id: 2222.0000.0001
+  switchport:
+    enabled: true
 prefix_lists:
 - name: DEFAULT_ONLY
   sequence_numbers:
