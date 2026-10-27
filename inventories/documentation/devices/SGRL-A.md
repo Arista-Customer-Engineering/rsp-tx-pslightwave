@@ -790,7 +790,6 @@ ipv6 unicast-routing vrf INTERNET
 | VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
 | --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
 | INTERNET | 80.50.0.0/24 | - | null0 | 254 | - | - | - |
-| INTERNET | 198.51.100.30/32 | 198.51.100.20 | - | 1 | - | - | - |
 | OOB | 0.0.0.0/0 | 192.168.128.254 | - | 1 | - | - | - |
 
 #### Static Routes Device Configuration
@@ -798,7 +797,6 @@ ipv6 unicast-routing vrf INTERNET
 ```eos
 !
 ip route vrf INTERNET 80.50.0.0/24 Null0 254
-ip route vrf INTERNET 198.51.100.30/32 198.51.100.20
 ip route vrf OOB 0.0.0.0/0 192.168.128.254
 ```
 
@@ -899,12 +897,11 @@ ASN Notation: asplain
 
 #### Router BGP Peer Groups
 
-##### DIA_DEFAULT_ONLY
+##### DIA_FULL_TABLE
 
 | Settings | Value |
 | -------- | ----- |
 | Local AS | 394437 |
-| Default originate | True |
 
 ##### MPLS-OVERLAY-PEERS
 
@@ -923,7 +920,7 @@ ASN Notation: asplain
 | 172.16.0.201 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.202 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.203 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
-| 198.51.100.30 | 65501 | INTERNET | - | - | - | - | - | - | - | - | - | - | - |
+| 198.51.100.20 | 65501 | INTERNET | - | - | - | - | - | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -961,10 +958,8 @@ router bgp 65000
    router-id 172.16.0.101
    no bgp default ipv4-unicast
    maximum-paths 4
-   neighbor DIA_DEFAULT_ONLY peer group
-   neighbor DIA_DEFAULT_ONLY local-as 394437 no-prepend replace-as
-   neighbor DIA_DEFAULT_ONLY route-map DEFAULT_ONLY out
-   neighbor DIA_DEFAULT_ONLY default-originate always
+   neighbor DIA_FULL_TABLE peer group
+   neighbor DIA_FULL_TABLE local-as 394437 no-prepend replace-as
    neighbor MPLS-OVERLAY-PEERS peer group
    neighbor MPLS-OVERLAY-PEERS remote-as 65000
    neighbor MPLS-OVERLAY-PEERS update-source Loopback0
@@ -1010,16 +1005,14 @@ router bgp 65000
       route-target import evpn 65000:30000
       route-target export evpn 65000:30000
       router-id 172.16.0.101
-      neighbor 198.51.100.30 peer group DIA_DEFAULT_ONLY
-      neighbor 198.51.100.30 remote-as 65501
-      neighbor 198.51.100.30 description DIA: CUST-B (multi-hop eBGP)
-      neighbor 198.51.100.30 ebgp-multihop 2
-      neighbor 198.51.100.30 route-map RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT out
+      neighbor 198.51.100.20 peer group DIA_FULL_TABLE
+      neighbor 198.51.100.20 remote-as 65501
+      neighbor 198.51.100.20 description DIA: CUST-B (direct, partial table)
       redistribute connected rcf REDISTRIBUTE_INTERNET()
       redistribute static rcf REDISTRIBUTE_INTERNET()
       !
       address-family ipv4
-         neighbor 198.51.100.30 activate
+         neighbor 198.51.100.20 activate
 ```
 
 ## BFD
@@ -1180,12 +1173,6 @@ ip prefix-list PROVIDER_ROUTES
 | 10 | permit | ip address prefix-list PROVIDER_ROUTES | - | - | - |
 | 20 | deny | - | - | - | - |
 
-##### RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT
-
-| Sequence | Type | Match | Set | Sub-Route-Map | Continue |
-| -------- | ---- | ----- | --- | ------------- | -------- |
-| 10 | permit | - | ip next-hop 198.51.100.21 | - | - |
-
 #### Route-maps Device Configuration
 
 ```eos
@@ -1199,9 +1186,6 @@ route-map PROVIDER_ROUTES_ONLY permit 10
    match ip address prefix-list PROVIDER_ROUTES
 !
 route-map PROVIDER_ROUTES_ONLY deny 20
-!
-route-map RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT permit 10
-   set ip next-hop 198.51.100.21
 ```
 
 ## VRF Instances

@@ -11,7 +11,6 @@
   - [AAA Authorization](#aaa-authorization)
 - [Interfaces](#interfaces)
   - [Ethernet Interfaces](#ethernet-interfaces)
-  - [Loopback Interfaces](#loopback-interfaces)
 - [Routing](#routing)
   - [Service Routing Protocols Model](#service-routing-protocols-model)
   - [IP Routing](#ip-routing)
@@ -164,32 +163,6 @@ interface Ethernet1
    ip address 198.51.100.20/31
 ```
 
-### Loopback Interfaces
-
-#### Loopback Interfaces Summary
-
-##### IPv4
-
-| Interface | Description | VRF | IP Address |
-| --------- | ----------- | --- | ---------- |
-| Loopback0 | Multi-hop eBGP source | default | 198.51.100.30/32 |
-
-##### IPv6
-
-| Interface | Description | VRF | IPv6 Addresses |
-| --------- | ----------- | --- | -------------- |
-| Loopback0 | Multi-hop eBGP source | default | - |
-
-#### Loopback Interfaces Device Configuration
-
-```eos
-!
-interface Loopback0
-   description Multi-hop eBGP source
-   no shutdown
-   ip address 198.51.100.30/32
-```
-
 ## Routing
 
 ### Service Routing Protocols Model
@@ -233,14 +206,14 @@ no ip routing vrf OOB
 
 | VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
 | --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
-| default | 0.0.0.0/0 | 198.51.100.21 | - | 1 | - | - | - |
+| default | 80.50.0.0/24 | - | null0 | 1 | - | - | - |
 | OOB | 0.0.0.0/0 | 192.168.128.254 | - | 1 | - | - | - |
 
 #### Static Routes Device Configuration
 
 ```eos
 !
-ip route 0.0.0.0/0 198.51.100.21
+ip route 80.50.0.0/24 Null0
 ip route vrf OOB 0.0.0.0/0 192.168.128.254
 ```
 
@@ -252,28 +225,32 @@ ASN Notation: asplain
 
 | BGP AS | Router ID |
 | ------ | --------- |
-| 65501 | 198.51.100.30 |
+| 65501 | 198.51.100.20 |
 
 #### BGP Neighbors
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Maximum-accepted-routes | Maximum-advertised-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ----------------------- | ------------------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 80.100.0.101 | 394437 | default | False | - | - | - | - | - | - | - | - | - | - |
+| 80.100.0.1 | 394437 | default | False | - | - | - | - | - | - | - | - | - | - |
+| 198.51.100.21 | 394437 | default | False | - | - | - | - | - | - | - | - | - | - |
 
 #### Router BGP Device Configuration
 
 ```eos
 !
 router bgp 65501
-   router-id 198.51.100.30
-   neighbor 80.100.0.101 remote-as 394437
-   neighbor 80.100.0.101 update-source Loopback0
-   neighbor 80.100.0.101 description SGRL-A INTERNET VRF (multi-hop)
-   neighbor 80.100.0.101 ebgp-multihop 2
-   redistribute connected route-map ADV_LO0
+   router-id 198.51.100.20
+   neighbor 80.100.0.1 remote-as 394437
+   neighbor 80.100.0.1 update-source Ethernet1
+   neighbor 80.100.0.1 description CYWE-A Lo30 (multi-hop, full table)
+   neighbor 80.100.0.1 ebgp-multihop 5
+   neighbor 198.51.100.21 remote-as 394437
+   neighbor 198.51.100.21 description SGRL-A (direct, partial table)
+   redistribute static route-map ADV_CUST
    !
    address-family ipv4
-      neighbor 80.100.0.101 activate
+      neighbor 80.100.0.1 activate
+      neighbor 198.51.100.21 activate
 ```
 
 ## Filters
@@ -282,41 +259,39 @@ router bgp 65501
 
 #### Prefix-lists Summary
 
-##### ADV_LO0
+##### ADV_CUST
 
 | Sequence | Action |
 | -------- | ------ |
-| 10 | permit 198.51.100.30/32 |
-| 20 | permit 80.50.0.0/24 |
+| 10 | permit 80.50.0.0/24 |
 
 #### Prefix-lists Device Configuration
 
 ```eos
 !
-ip prefix-list ADV_LO0
-   seq 10 permit 198.51.100.30/32
-   seq 20 permit 80.50.0.0/24
+ip prefix-list ADV_CUST
+   seq 10 permit 80.50.0.0/24
 ```
 
 ### Route-maps
 
 #### Route-maps Summary
 
-##### ADV_LO0
+##### ADV_CUST
 
 | Sequence | Type | Match | Set | Sub-Route-Map | Continue |
 | -------- | ---- | ----- | --- | ------------- | -------- |
-| 10 | permit | ip address prefix-list ADV_LO0 | - | - | - |
+| 10 | permit | ip address prefix-list ADV_CUST | - | - | - |
 | 20 | deny | - | - | - | - |
 
 #### Route-maps Device Configuration
 
 ```eos
 !
-route-map ADV_LO0 permit 10
-   match ip address prefix-list ADV_LO0
+route-map ADV_CUST permit 10
+   match ip address prefix-list ADV_CUST
 !
-route-map ADV_LO0 deny 20
+route-map ADV_CUST deny 20
 ```
 
 ## VRF Instances

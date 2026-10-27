@@ -967,6 +967,7 @@ ASN Notation: asplain
 | 172.16.0.202 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 172.16.0.203 | Inherited from peer group MPLS-OVERLAY-PEERS | default | - | Inherited from peer group MPLS-OVERLAY-PEERS | Inherited from peer group MPLS-OVERLAY-PEERS | - | - | - | - | - | - | - | - |
 | 198.51.100.0 | 1299 | INTERNET | False | - | - | - | - | - | - | - | - | - | - |
+| 198.51.100.20 | 65501 | INTERNET | - | - | - | - | - | - | - | - | - | - | - |
 | 198.51.100.22 | 65502 | INTERNET | - | - | - | - | - | - | - | - | - | - | - |
 | 2601::0 | 1299 | INTERNET | False | - | - | - | - | - | - | - | - | - | - |
 
@@ -1054,6 +1055,10 @@ router bgp 65000
       neighbor 198.51.100.0 peer group PROVIDER
       neighbor 198.51.100.0 remote-as 1299
       neighbor 198.51.100.0 description AS1299 Arelion
+      neighbor 198.51.100.20 peer group DIA_FULL_TABLE
+      neighbor 198.51.100.20 remote-as 65501
+      neighbor 198.51.100.20 description DIA: CUST-B (multi-hop, full table)
+      neighbor 198.51.100.20 ebgp-multihop 5
       neighbor 198.51.100.22 peer group DIA_FULL_TABLE
       neighbor 198.51.100.22 remote-as 65502
       neighbor 198.51.100.22 description DIA: CUST-C (VPWS)
@@ -1065,6 +1070,7 @@ router bgp 65000
       !
       address-family ipv4
          neighbor 198.51.100.0 activate
+         neighbor 198.51.100.20 activate
          neighbor 198.51.100.22 activate
       !
       address-family ipv6

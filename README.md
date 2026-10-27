@@ -1,6 +1,6 @@
 # PSLightwave (AS394437) — AVD Lab
 
-A containerlab-based MPLS service provider lab modeled after [PSLightwave](https://pslightwave.com/)'s Houston-area network, built with [Arista AVD](https://avd.arista.com/). The lab features IS-IS Segment Routing, BGP EVPN with MPLS encapsulation, five real-world transit providers (fully meshed), three DIA delivery models, and EVPN-VPWS customer services — all generated from AVD data models and deployed to cEOS containers.
+A containerlab-based MPLS service provider lab modeled after [PSLightwave](https://pslightwave.com/)'s Houston-area network, built with [Arista AVD](https://avd.arista.com/). The lab features IS-IS Segment Routing, BGP EVPN with MPLS encapsulation, five real-world transit providers (fully meshed), three DIA delivery models, EVPN-VPWS customer services, and partial PE route filtering with RCF — all generated from AVD data models and deployed to cEOS containers.
 
 ![PSLightwave Topology](TX-PS%20Lightwave%20-%20AVD%20Export.png)
 
@@ -49,15 +49,15 @@ Two parallel rows of POP pairs connected in a dual-plane mesh. All PE nodes are 
 |------|----------|----|---------|
 | SGRL-A | 7020R4-24Y-6QDF (PE_PARTIAL) | 101 | .128.20 |
 
-SGRL-A connects to CYWE-A (Eth27/1 → Eth1/1) and CORP-A (Eth28/1 → Eth1/1) via the HUB profile (IS-IS metric 100000).
+SGRL-A connects to CYWE-A (Eth27/1 → Eth1/1) and CORP-A (Eth28/1 → Eth1/1) via the HUB profile (IS-IS metric 100000). As a PE_PARTIAL, it does not carry the full internet table — see [Partial PE Routing](#6-partial-pe-routing).
 
 ### Route Reflectors
 
-| Node | Platform | Mgmt IP | Peers |
-|------|----------|---------|-------|
-| CORP-R | 7230R-4TX-4S | .128.101 | CORP-A, CORP-B |
-| FIBT-R | 7230R-4TX-4S | .128.102 | FIBT-A, FIBT-B |
-| CLAK-R | 7230R-4TX-4S | .128.103 | CLAK-A, CLAK-B |
+| Node | Platform | ID | Mgmt IP | Peers |
+|------|----------|----|---------|-------|
+| CORP-R | 7230R-4TX-4S | 201 | .128.101 | CORP-A, CORP-B |
+| FIBT-R | 7230R-4TX-4S | 202 | .128.102 | FIBT-A, FIBT-B |
+| CLAK-R | 7230R-4TX-4S | 203 | .128.103 | CLAK-A, CLAK-B |
 
 RR links use Ethernet1/2 on the 7230R side and Eth29/1 on the 24D12 side, with the ROUTE_REFLECTORS profile (IS-IS metric 16777214).
 
@@ -96,7 +96,7 @@ show isis ti-lfa path
 
 ## 2. BGP EVPN Overlay
 
-iBGP (AS 65000) with EVPN address family, MPLS encapsulation, and RT-membership (RTC).
+iBGP (AS 65000) with EVPN address family, MPLS encapsulation, and RT-membership (RTC). PEs peer only with route reflectors (`bgp_mesh_pes: false`).
 
 | Parameter | Value |
 |-----------|-------|
@@ -104,6 +104,7 @@ iBGP (AS 65000) with EVPN address family, MPLS encapsulation, and RT-membership 
 | Route Reflectors | CORP-R, FIBT-R, CLAK-R |
 | EVPN encapsulation | MPLS |
 | RT-membership (RTC) | Enabled |
+| PE mesh | Disabled (RR-only peering) |
 
 ### Verify
 
@@ -116,7 +117,7 @@ show bgp rt-membership summary
 
 ## 3. Transit Peering
 
-Five transit providers peer with PSLightwave (AS394437) in the INTERNET VRF. The TRANSIT cEOS node simulates all five carriers, fully meshed with each other over an internal loopback cable (Eth6↔Eth7).
+Five transit providers peer with PSLightwave (AS394437) in the INTERNET VRF. The TRANSIT cEOS node simulates all five carriers, fully meshed with each other over an internal loopback cable (Eth6↔Eth7, 10 peering pairs).
 
 | Provider | ASN | PE | Interface |
 |----------|-----|----|-----------|
@@ -125,6 +126,8 @@ Five transit providers peer with PSLightwave (AS394437) in the INTERNET VRF. The
 | Lumen | 3356 | FIBT-B | Ethernet2/1 |
 | NTT | 2914 | TSHL-A | Ethernet2/1 |
 | GTT | 3257 | CYGA-A | Ethernet2/1 |
+
+All five transit PEs originate a default route (`0.0.0.0/0` via null0, distance 250) into the INTERNET VRF.
 
 ### Realistic Route Table
 
@@ -188,26 +191,31 @@ show bgp vrf INTERNET neighbor 198.51.100.24
 show ip bgp vrf INTERNET neighbor 198.51.100.24 advertised-routes | count
 ```
 
-### 4b. CUST-B — Multi-hop eBGP with Static Default (SGRL-A)
+### 4b. CUST-B — Dual-Session DIA (SGRL-A + CYWE-A)
 
-For customers behind a PE_PARTIAL hub that doesn't carry the full table. The CE uses a static default route for forwarding and multi-hop eBGP (via loopbacks) for advertising its own prefixes to the SP.
+For customers behind a PE_PARTIAL hub. CUST-B has two eBGP sessions — one direct to SGRL-A for partial routes, and one multi-hop to a full-table PE (CYWE-A) for the full internet table.
+
+| Session | Peer | Type | Source | Gets |
+|---------|------|------|--------|------|
+| SGRL-A | 198.51.100.21 | Direct on P2P | Ethernet1 | Partial table (defaults + tagged routes) |
+| CYWE-A | 80.100.0.1 (Lo30) | Multi-hop (TTL 5) | `update-source Ethernet1` (198.51.100.20) | Full internet table |
 
 | Parameter | Value |
 |-----------|-------|
 | CE | CUST-B (AS65501) |
-| PE | SGRL-A, Ethernet2 |
-| CE link IP | 198.51.100.20/31 |
+| PE (partial) | SGRL-A, Ethernet2 |
+| PE (full table) | CYWE-A, Loopback30 |
+| CE IP | 198.51.100.20/31 |
 | PE link IP | 198.51.100.21/31 |
-| CE loopback | 198.51.100.30/32 |
-| PE loopback | Loopback30 (INTERNET VRF) |
-| Peer group | `DIA_DEFAULT_ONLY` |
+| Customer prefix | 80.50.0.0/24 |
 
-The PE has a static route to the CE's loopback (`198.51.100.30/32 via 198.51.100.20`) enabling the multi-hop eBGP session. The PE sends only a default route to the CE.
+SGRL-A redistributes the connected 198.51.100.20/31 into EVPN, giving CYWE-A reachability to CUST-B's interface for the multi-hop session. SGRL-A also advertises CYWE-A's Loopback30 /32 (learned via EVPN) to CUST-B, enabling the full-table session.
 
 ```
-# On SGRL-A
-show bgp vrf INTERNET neighbor 198.51.100.30
-show ip route vrf INTERNET 198.51.100.30
+# On CUST-B
+show bgp summary
+show ip bgp neighbor 198.51.100.21 received-routes | count
+show ip bgp neighbor 80.100.0.1 received-routes | count
 ```
 
 ### 4c. CUST-C — VPWS Stretch to Full-Table PE (SGRL-A → CYWE-A)
@@ -241,28 +249,78 @@ show bgp vrf INTERNET neighbor 198.51.100.22
 
 An EVPN-VPWS pseudowire with **multihomed A-side** (ESI LAG) and **single-homed Z-side**.
 
-| Side | Nodes | Interfaces | ESI |
-|------|-------|------------|-----|
-| A-side | SGRL-A + CORP-A | Ethernet1 + Ethernet3/1 | `2222:0000:0001` (LAG) |
-| Z-side | CLAK-B | Ethernet3/1 | — |
+The A-side physical attachment is defined via `connected_endpoints` (`endpoints_vpws`) with `channel_id: 1`, ensuring both SGRL-A and CORP-A create Port-Channel1 with matching LACP OperKeys. The VPWS `point_to_point_services` references Port-Channel1 by name for the pseudowire binding.
 
-VLAN 100 encapsulation on all endpoints. CUST-A is a Linux (netshoot) node dual-homed via the ESI LAG; CUST-Z is a Linux node single-homed to CLAK-B.
+| Side | Nodes | Interfaces | Port-Channel | ESI |
+|------|-------|------------|--------------|-----|
+| A-side | SGRL-A + CORP-A | Ethernet1 + Ethernet3/1 | Port-Channel1 (`channel_id: 1`) | `2222:0000:0001` |
+| Z-side | CLAK-B | Ethernet3/1 | — | — |
+
+VLAN 100 encapsulation. CUST-A and CUST-Z are cEOS nodes.
 
 ### Verify
 
 ```
+# On CUST-A — both links should be bundled
+show port-channel 1 detail
+show lacp interface detailed
+
 # On SGRL-A or CORP-A
 show bgp evpn route-type auto-discovery
 show bgp evpn route-type ethernet-segment
 show patch panel
 
-# On CLAK-B
-show patch panel
+# End-to-end
+# From CUST-A: ping 192.168.100.2 source 192.168.100.1
 ```
 
 ---
 
-## 6. Accessing Nodes
+## 6. Partial PE Routing
+
+SGRL-A is a PE_PARTIAL hub that does not carry the full internet table. Route reflectors use RCF-based EVPN export filtering to limit what INTERNET VRF routes reach SGRL-A.
+
+### Architecture
+
+1. **Community tagging at redistribution**: All PEs run `REDISTRIBUTE_INTERNET()` RCF on the INTERNET VRF's `redistribute static` and `redistribute connected`. This tags locally originated routes (defaults, summary pins, customer allocations) with the `PROVIDER` community (`65000:64496`). Transit routes learned via eBGP are NOT tagged.
+
+2. **RR export filtering**: Each RR has a second BGP peer group (`MPLS-OVERLAY-PEERS-PARTIAL`) with `rcf out EXPORT_PARTIAL()`. SGRL-A peers via this group. The RCF allows:
+   - Default routes (`0.0.0.0/0`, `::/0`)
+   - Routes tagged with `PROVIDER` (`65000:64496`), `CUSTOMERS` (`65000:4000`), or `CACHES` (`65000:2000`)
+   - All non-IP-prefix EVPN route types (MAC/IP, IMET, ES)
+   - Blocks all other EVPN IP prefix routes (the full transit table)
+
+3. **RT-membership**: The partial peer group uses `default-route-target only`, so SGRL-A's RT subscriptions still flow normally — filtering happens at the RCF level, not at the RT level.
+
+### Community Lists
+
+| Name | Community | Purpose |
+|------|-----------|---------|
+| PROVIDER | `65000:64496` | Provider-owned routes (connected, statics, defaults) |
+| CUSTOMERS | `65000:4000` | Customer routes (placeholder) |
+| CACHES | `65000:2000` | CDN/cache routes (placeholder) |
+
+### Verify
+
+```
+# On SGRL-A — should see only defaults + tagged routes, NOT the full 200 transit prefixes
+show ip bgp vrf INTERNET | count
+show ip bgp vrf INTERNET 0.0.0.0/0
+
+# On a full PE (e.g., CYGA-A) — should see all 200+ prefixes
+show ip bgp vrf INTERNET | count
+
+# On an RR — verify RCF is compiled and the partial peer group exists
+show router general control-functions code compiled
+show bgp neighbor 172.16.0.101 | include peer.group
+
+# Verify community tagging on a transit PE
+show ip bgp vrf INTERNET 0.0.0.0/0 detail | grep community
+```
+
+---
+
+## 7. Accessing Nodes
 
 ### cEOS Nodes (EOS CLI)
 
@@ -271,11 +329,12 @@ docker exec -it clab-sp-CYWE-A Cli
 ssh admin@192.168.128.1
 ```
 
-### Linux Nodes
+### Customer CEs
 
 ```bash
-docker exec -it clab-sp-CUST-A sh
-docker exec -it clab-sp-CUST-Z sh
+docker exec -it clab-sp-CUST-A Cli
+docker exec -it clab-sp-CUST-B Cli
+docker exec -it clab-sp-CUST-Z Cli
 ```
 
 ---
@@ -286,28 +345,37 @@ docker exec -it clab-sp-CUST-Z sh
 rsp-tx-pslightwave/
   TX-PS Lightwave - AVD Export.png       # Customer topology diagram
   sp.clab.yml                            # Containerlab topology
+  sp.clab.yml.annotations.json           # Containerlab graph layout
   Makefile                               # Build, deploy, clab targets
   requirements.yml                       # Ansible collection requirements
   inventories/
     inventory.yml                        # Ansible inventory
+    gen_transit_routes.py                # Prefix/RCF generator for TRANSIT
+    assemble_transit.py                  # TRANSIT.yml assembly script
     group_vars/
       all.yml                            # Global settings (AAA, NTP, DNS)
+      pe_routers.yml                     # PE policies (prefix-lists, route-maps, communities)
       mpls/
-        fabric.yml                       # IS-IS, SR, BGP, node definitions
+        fabric.yml                       # IS-IS, SR, BGP, node definitions, RCF
         core_interfaces.yml              # 22 backbone links (P2P + port-channels)
         services.yml                     # Network services keys
         vrf_inband_mgmt.yml              # Inband management VRF
       services/
         services_internet.yml            # INTERNET VRF (transit + DIA)
-        services_vpws.yml                # VPWS services (CUST-A/Z + DIA VPWS)
+        services_vpws.yml                # VPWS pseudowire bindings
+        endpoints_vpws.yml               # VPWS physical attachments (connected_endpoints)
         _db_esi.yml                      # ESI allocation database
         _db_pwire_id.yml                 # Pseudowire ID database
+        _svi_profiles.yml                # SVI profiles (legacy)
     host_vars/
       TRANSIT.yml                        # 5-carrier simulator (200 prefixes, RCF)
-      CUST-B.yml                         # DIA CE (multi-hop eBGP)
+      CUST-A.yml                         # VPWS CE (A-side, dual-homed)
+      CUST-B.yml                         # DIA CE (dual-session: SGRL-A + CYWE-A)
       CUST-C.yml                         # DIA CE (VPWS stretch)
-      CUST-D.yml                         # DIA CE (full table)
+      CUST-D.yml                         # DIA CE (direct full table)
+      CUST-Z.yml                         # VPWS CE (Z-side, single-homed)
     intended/
       configs/                           # Generated EOS configs (.cfg)
       structured_configs/                # Generated structured YAML
+    documentation/                       # Generated device docs
 ```

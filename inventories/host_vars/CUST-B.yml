@@ -1,7 +1,9 @@
 ---
-# CUST-B: DIA customer on SGRL-A using multi-hop eBGP with static default.
-# CE has a static default route to SGRL-A and advertises its own prefix
-# (80.50.0.0/24) via multi-hop eBGP to SGRL-A's INTERNET VRF loopback.
+# CUST-B: DIA customer on SGRL-A with two eBGP sessions:
+#   1. SGRL-A (direct on P2P) — partial table (whatever SGRL-A knows)
+#   2. CYWE-A Lo30 (multi-hop via SGRL-A) — full internet table
+# SGRL-A redistributes the 198.51.100.20/31 connected route into EVPN,
+# so CYWE-A can reach CUST-B's interface IP for the multi-hop session.
 hostname: CUST-B
 
 aaa_authentication:
@@ -42,12 +44,6 @@ vrfs:
   - name: OOB
     ip_routing: false
 
-loopback_interfaces:
-  - name: Loopback0
-    description: "Multi-hop eBGP source"
-    shutdown: false
-    ip_address: 198.51.100.30/32
-
 ethernet_interfaces:
   - name: Ethernet1
     description: "SGRL-A DIA uplink"
@@ -60,42 +56,46 @@ static_routes:
   - vrf: OOB
     prefix: 0.0.0.0/0
     next_hop: 192.168.128.254
-  - prefix: 0.0.0.0/0
-    next_hop: 198.51.100.21
+  - prefix: 80.50.0.0/24
+    interface: "null0"
 
 router_bgp:
   as: '65501'
-  router_id: 198.51.100.30
+  router_id: 198.51.100.20
   neighbors:
-    - ip_address: 80.100.0.101
+    - ip_address: 198.51.100.21
       remote_as: '394437'
-      description: "SGRL-A INTERNET VRF (multi-hop)"
+      description: "SGRL-A (direct, partial table)"
       shutdown: false
-      ebgp_multihop: 2
-      update_source: Loopback0
+    - ip_address: 80.100.0.1
+      remote_as: '394437'
+      description: "CYWE-A Lo30 (multi-hop, full table)"
+      shutdown: false
+      ebgp_multihop: 5
+      update_source: Ethernet1
   redistribute:
-    connected:
+    static:
       enabled: true
-      route_map: ADV_LO0
+      route_map: ADV_CUST
   address_family_ipv4:
     neighbors:
-      - ip_address: 80.100.0.101
+      - ip_address: 198.51.100.21
+        activate: true
+      - ip_address: 80.100.0.1
         activate: true
 
 prefix_lists:
-  - name: ADV_LO0
+  - name: ADV_CUST
     sequence_numbers:
       - sequence: 10
-        action: "permit 198.51.100.30/32"
-      - sequence: 20
         action: "permit 80.50.0.0/24"
 
 route_maps:
-  - name: ADV_LO0
+  - name: ADV_CUST
     sequence_numbers:
       - sequence: 10
         type: permit
         match:
-          - "ip address prefix-list ADV_LO0"
+          - "ip address prefix-list ADV_CUST"
       - sequence: 20
         type: deny

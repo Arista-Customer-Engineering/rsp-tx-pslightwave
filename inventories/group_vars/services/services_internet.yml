@@ -54,11 +54,7 @@ services_internet: # Network services key
             nodes: ["CYGA-A"]
             distance: 254
           ########## END OF CUSTOMER STATIC ALLOCATIONS ##########
-          ########### CUST-B MULTI-HOP eBGP STATIC ###############
-          - prefix: "198.51.100.30/32"
-            next_hop: "198.51.100.20"
-            nodes: ["SGRL-A"]
-          ########### END OF CUST-B MULTI-HOP eBGP STATIC ########
+          ##########################################################
         ipv6_static_routes:
           ############### SUMMARY ROUTE PINNING #################
           - prefix: "0::0/0"
@@ -227,12 +223,16 @@ services_internet: # Network services key
             remote_as: 3257
           ########### DIA CUSTOMER PEERS ###########
           - nodes: ["SGRL-A"]
-            peer_group: DIA_DEFAULT_ONLY
-            description: "DIA: CUST-B (multi-hop eBGP)"
-            ip_address: "198.51.100.30"
+            peer_group: DIA_FULL_TABLE
+            description: "DIA: CUST-B (direct, partial table)"
+            ip_address: "198.51.100.20"
             remote_as: 65501
-            ebgp_multihop: 2
-            set_ipv4_next_hop: "198.51.100.21"
+          - nodes: ["CYWE-A"]
+            peer_group: DIA_FULL_TABLE
+            description: "DIA: CUST-B (multi-hop, full table)"
+            ip_address: "198.51.100.20"
+            remote_as: 65501
+            ebgp_multihop: 5
           - nodes: ["CYWE-A"]
             peer_group: DIA_FULL_TABLE
             description: "DIA: CUST-C (VPWS)"

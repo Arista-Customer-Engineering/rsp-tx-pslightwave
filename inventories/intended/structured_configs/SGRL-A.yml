@@ -320,12 +320,6 @@ prefix_lists:
   - sequence: 30
     action: permit 82.0.0.0/16 le 24
 route_maps:
-- name: RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT
-  sequence_numbers:
-  - sequence: 10
-    type: permit
-    set:
-    - ip next-hop 198.51.100.21
 - name: DEFAULT_ONLY
   sequence_numbers:
   - sequence: 10
@@ -364,12 +358,8 @@ router_bgp:
     bfd: false
     send_community: all
     maximum_routes: 0
-  - name: DIA_DEFAULT_ONLY
+  - name: DIA_FULL_TABLE
     local_as: '394437'
-    default_originate:
-      enabled: true
-      always: true
-    route_map_out: DEFAULT_ONLY
   neighbors:
   - ip_address: 172.16.0.203
     peer_group: MPLS-OVERLAY-PEERS
@@ -444,12 +434,10 @@ router_bgp:
         - 65000:30000
     router_id: 172.16.0.101
     neighbors:
-    - ip_address: 198.51.100.30
-      peer_group: DIA_DEFAULT_ONLY
+    - ip_address: 198.51.100.20
+      peer_group: DIA_FULL_TABLE
       remote_as: '65501'
-      description: 'DIA: CUST-B (multi-hop eBGP)'
-      ebgp_multihop: 2
-      route_map_out: RM-INTERNET-198.51.100.30-SET-NEXT-HOP-OUT
+      description: 'DIA: CUST-B (direct, partial table)'
     redistribute:
       connected:
         enabled: true
@@ -459,7 +447,7 @@ router_bgp:
         rcf: REDISTRIBUTE_INTERNET()
     address_family_ipv4:
       neighbors:
-      - ip_address: 198.51.100.30
+      - ip_address: 198.51.100.20
         activate: true
 router_general:
   control_functions:
@@ -496,9 +484,6 @@ static_routes:
   prefix: 80.50.0.0/24
   interface: null0
   distance: 254
-- vrf: INTERNET
-  prefix: 198.51.100.30/32
-  next_hop: 198.51.100.20
 switchport_default:
   mode: routed
 transceiver_qsfp_default_mode_4x10: false
