@@ -52,6 +52,21 @@ ethernet_interfaces:
     peer: CLAK-B
     peer_interface: Ethernet25/1
     peer_type: pe
+- name: Ethernet3/1.100
+  shutdown: false
+  encapsulation_vlan:
+    client:
+      encapsulation: dot1q
+      vlan: 100
+    network: null
+  metadata:
+    peer_type: point_to_point_service
+- name: Ethernet3/1
+  shutdown: false
+  metadata:
+    peer_type: l3_interface
+  switchport:
+    enabled: false
 event_monitor:
   enabled: true
 hostname: TSHL-B
@@ -176,6 +191,17 @@ ntp:
   - name: 192.5.41.40
   - name: 192.5.41.41
   vrf: OOB
+patch_panel:
+  patches:
+  - name: CUST-A-TO-CUST-Z_100
+    enabled: true
+    connectors:
+    - id: '1'
+      type: interface
+      endpoint: Ethernet3/1.100
+    - id: '2'
+      type: pseudowire
+      endpoint: bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100
 port_channel_interfaces:
 - name: Port-Channel261
   description: P2P_TSHL-A_Port-Channel261
@@ -291,6 +317,15 @@ router_bgp:
     metadata:
       peer: FIBT-R
     description: FIBT-R_Loopback0
+  vpws:
+  - name: VPWS_SERVICES
+    rd: 172.16.0.10:28000
+    route_targets:
+      import_export: 65000:28000
+    pseudowires:
+    - name: CUST-A-TO-CUST-Z_100
+      id_local: 102
+      id_remote: 101
   address_family_evpn:
     neighbor_default:
       encapsulation: mpls

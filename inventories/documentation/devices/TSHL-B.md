@@ -48,6 +48,9 @@
   - [MPLS and LDP](#mpls-and-ldp)
   - [MPLS Interfaces](#mpls-interfaces)
   - [MPLS Device Configuration](#mpls-device-configuration)
+- [Patch Panel](#patch-panel)
+  - [Patch Panel Summary](#patch-panel-summary)
+  - [Patch Panel Device Configuration](#patch-panel-device-configuration)
 - [Multicast](#multicast)
   - [IP IGMP Snooping](#ip-igmp-snooping)
 - [Filters](#filters)
@@ -505,6 +508,12 @@ interface defaults
 
 *Inherited from Port-Channel Interface
 
+##### Flexible Encapsulation Interfaces
+
+| Interface | Description | Vlan ID | Client Encapsulation | Client Inner Encapsulation | Client VLAN | Client Outer VLAN Tag | Client Inner VLAN Tag | Network Encapsulation | Network Inner Encapsulation | Network VLAN | Network Outer VLAN Tag | Network Inner VLAN Tag |
+| --------- | ----------- | ------- | -------------------- | -------------------------- | ----------- | --------------------- | --------------------- | --------------------- | --------------------------- | ------------ | ---------------------- | ---------------------- |
+| Ethernet3/1.100 | - | - | dot1q | - | 100 | - | - | - | - | - | - | - |
+
 ##### IPv4
 
 | Interface | Description | Channel Group | IP Address | VRF | MTU | Shutdown | ACL In | ACL Out |
@@ -528,6 +537,15 @@ interface defaults
 #### Ethernet Interfaces Device Configuration
 
 ```eos
+!
+interface Ethernet3/1
+   no shutdown
+   no switchport
+!
+interface Ethernet3/1.100
+   no shutdown
+   encapsulation vlan
+      client dot1q 100
 !
 interface Ethernet25/1
    description P2P_CLAK-B_Ethernet25/1
@@ -845,6 +863,12 @@ ASN Notation: asplain
 | ------------------------------ | ------------------------------ |
 | mpls | Loopback0 |
 
+#### Router BGP VPWS Instances
+
+| Instance | Route-Distinguisher | Both Route-Target | MPLS Control Word | Label Flow | MTU | Pseudowire | Local ID | Remote ID |
+| -------- | ------------------- | ----------------- | ----------------- | ---------- | --- | ---------- | -------- | --------- |
+| VPWS_SERVICES | 172.16.0.10:28000 | 65000:28000 | False | False | - | CUST-A-TO-CUST-Z_100 | 102 | 101 |
+
 #### Router BGP VRFs
 
 | VRF | Route-Distinguisher | Redistribute | Graceful Restart |
@@ -871,6 +895,13 @@ router bgp 65000
    neighbor 172.16.0.202 description FIBT-R_Loopback0
    neighbor 172.16.0.203 peer group MPLS-OVERLAY-PEERS
    neighbor 172.16.0.203 description CLAK-R_Loopback0
+   !
+   vpws VPWS_SERVICES
+      rd 172.16.0.10:28000
+      route-target import export evpn 65000:28000
+      !
+      pseudowire CUST-A-TO-CUST-Z_100
+         evpn vpws id local 102 remote 101
    !
    address-family evpn
       neighbor default encapsulation mpls next-hop-self source-interface Loopback0
@@ -939,6 +970,28 @@ router bfd
 ```eos
 !
 mpls ip
+```
+
+## Patch Panel
+
+### Patch Panel Summary
+
+#### Patch Panel Connections
+
+| Patch Name | Enabled | Connector A Type | Connector A Endpoint | Connector B Type | Connector B Endpoint |
+| ---------- | ------- | ---------------- | -------------------- | ---------------- | -------------------- |
+| CUST-A-TO-CUST-Z_100 | True | Interface | Ethernet3/1.100 | Pseudowire | bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100 |
+
+### Patch Panel Device Configuration
+
+```eos
+!
+patch panel
+   patch CUST-A-TO-CUST-Z_100
+      connector 1 interface Ethernet3/1.100
+      !
+      connector 2 pseudowire bgp vpws VPWS_SERVICES pseudowire CUST-A-TO-CUST-Z_100
+   !
 ```
 
 ## Multicast
