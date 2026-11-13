@@ -22,7 +22,7 @@ services_vpws:
             nodes: ["SGRL-A", "CORP-A"]
             interfaces: ["Port-Channel1", "Port-Channel1"]
           - id: 2
-            nodes: ["CLAK-B"]
+            nodes: ["TSHL-B"]
             interfaces: ["Ethernet3/1"]
         lldp_disable: true
       ######################################################################
