@@ -6,7 +6,7 @@ mgmt:
   ipv4-gw: 192.168.128.254
 topology:
   kinds:
-    ceos:
+    arista_ceos:
       image: arista/ceos:latest
       env:
         CLAB_MGMT_VRF: OOB
@@ -15,100 +15,100 @@ topology:
     # PE Nodes - 7280CR3AK-24D12
     ######################################################################
     CYWE-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.1
       startup-config: inventories/intended/configs/CYWE-A.cfg
     CYWE-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.2
       startup-config: inventories/intended/configs/CYWE-B.cfg
     CORP-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.3
       startup-config: inventories/intended/configs/CORP-A.cfg
     CORP-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.4
       startup-config: inventories/intended/configs/CORP-B.cfg
     FIBT-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.5
       startup-config: inventories/intended/configs/FIBT-A.cfg
     FIBT-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.6
       startup-config: inventories/intended/configs/FIBT-B.cfg
     CYGA-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.7
       startup-config: inventories/intended/configs/CYGA-A.cfg
     CYGA-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.8
       startup-config: inventories/intended/configs/CYGA-B.cfg
     TSHL-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.9
       startup-config: inventories/intended/configs/TSHL-A.cfg
     TSHL-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.10
       startup-config: inventories/intended/configs/TSHL-B.cfg
     CLAK-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.11
       startup-config: inventories/intended/configs/CLAK-A.cfg
     CLAK-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.12
       startup-config: inventories/intended/configs/CLAK-B.cfg
     SGRL-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.20
       startup-config: inventories/intended/configs/SGRL-A.cfg
     ######################################################################
     # Route Reflectors - 7230R-4TX-4S
     ######################################################################
     CORP-R:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.101
       startup-config: inventories/intended/configs/CORP-R.cfg
     FIBT-R:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.102
       startup-config: inventories/intended/configs/FIBT-R.cfg
     CLAK-R:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.103
       startup-config: inventories/intended/configs/CLAK-R.cfg
     ######################################################################
     # Transit Provider Simulator
     ######################################################################
     TRANSIT:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.220
       startup-config: inventories/intended/configs/TRANSIT.cfg
     ######################################################################
     # Customer Endpoints
     ######################################################################
     CUST-A:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.230
       startup-config: inventories/intended/configs/CUST-A.cfg
     CUST-B:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.232
       startup-config: inventories/intended/configs/CUST-B.cfg
     CUST-C:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.233
       startup-config: inventories/intended/configs/CUST-C.cfg
     CUST-D:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.234
       startup-config: inventories/intended/configs/CUST-D.cfg
     CUST-Z:
-      kind: ceos
+      kind: arista_ceos
       mgmt-ipv4: 192.168.128.231
       startup-config: inventories/intended/configs/CUST-Z.cfg
   links:
